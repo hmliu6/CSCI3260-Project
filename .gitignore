@@ -8,6 +8,9 @@ Assignment1/x64
 x64
 .vs
 
+
+
+*.vcxproj*
 Assignment1/x64/Debug/Assignment1.log
 Assignment1/x64/Debug/Assignment1.tlog/Assignment1.lastbuildstate
 .vs/Assignment1/v14/.suo

@@ -1,47 +1,56 @@
-/*
-	CSCI3260 Assignment 2
-	Name : Yau Yui Pan
-	Student ID : 1155081383
-*/
-#version 440  // GLSL version your computer supports
+#version 410
 
-in layout(location=0) vec3 position;
-in layout(location=1) vec2 vertexUV;
-in layout(location=2) vec3 normal;
+layout(location = 0) in vec3 position;
+layout(location = 1) in vec2 vertexUV;
+layout(location = 2) in vec3 normal;
+layout(location = 3) in vec3 tangent;
+layout(location = 4) in vec3 bitangent;
 
+uniform mat4 ScalingMatrix;
+uniform mat4 TransformMatrix;
+uniform mat4 RotationMatrix;
 
-uniform mat4 MVP;
-uniform mat4 modelMatrix;
+uniform mat4 PVM;
+uniform mat3 viewModelMatrix;
 uniform mat4 viewMatrix;
-uniform vec3 lightPositionWorld;
+uniform mat4 modelMatrix;
+
+uniform vec3 lightPosition;
 
 out vec2 UV;
-
-out vec3 worldPosition;
-out vec3 cameraNormalSpace;
-out vec3 eyeDirection;
+out vec3 worldPos;
+out vec3 cameraEye;
 out vec3 lightDirection;
-
-//out vec3 normalWorld;
-//out vec3 vertexPositionWorld;
+out vec3 cameraNormal;
 
 void main()
 {
-	vec4 v = vec4(position, 1.0);
+  vec4 v = vec4(position, 1.0f);
+  vec4 new_position = PVM * RotationMatrix * TransformMatrix * ScalingMatrix * v;
+	gl_Position = new_position;
 
-	vec4 new_position =  MVP  * v;
-	
-	gl_Position = new_position;	
-    UV = vertexUV;
+  UV = vertexUV;
 
-	worldPosition = (modelMatrix * v).xyz;
+  // Calculation for lighting
+  worldPos = (modelMatrix * v).xyz;
 
-	vec3 vertexPositionCameraspace = ( viewMatrix * modelMatrix * v).xyz;
-	eyeDirection = vec3(0,0,0) - vertexPositionCameraspace;
+  vec3 cameraPos = (viewMatrix * modelMatrix * v).xyz;
+  cameraEye = vec3(0.0f, 0.0f, 0.0f) - cameraPos;
 
-	vec3 lightDirection = ( viewMatrix * vec4(lightPositionWorld,1)).xyz;
-	lightDirection = lightDirection + eyeDirection;
+  vec3 cameraLight = (viewMatrix * vec4(lightPosition, 1.0f)).xyz;
+  lightDirection = cameraLight + cameraEye;
 
-	cameraNormalSpace = ( viewMatrix * modelMatrix * vec4(normal,0)).xyz; // Only correct if ModelMatrix does not scale the model ! Use its inverse transpose if not.
+  cameraNormal = (viewMatrix * modelMatrix * vec4(normal, 0.0f)).xyz;
+
+  // Plane rendering for bump mapping
+  // if(planeRender == 1.0f){
+  //   vec3 cameraTangent = viewModelMatrix * normalize(tangent);
+  //   vec3 cameraBitangent = viewModelMatrix * normalize(bitangent);
+  //   vec3 cameraNormal = viewModelMatrix * normalize(normal);
+  //   mat3 TBN = transpose(mat3(cameraTangent, cameraBitangent, cameraNormal));
+  //
+  //   lightTangent = TBN * lightDirection;
+  //   eyeTangent = TBN * cameraEye;
+  // }
 
 }

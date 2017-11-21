@@ -1,58 +1,55 @@
-/*
-	CSCI3260 Assignment 2
-	Name : Yau Yui Pan
-	Student ID : 1155081383
-*/
-#version 440 //GLSL version your computer supports
+#version 410
 
+in vec2 UV;
+in vec3 worldPos;
+in vec3 cameraEye;
+in vec3 lightDirection;
+in vec3 cameraNormal;
 
-// Ouput data
 out vec3 color;
 
-// Values that stay constant for the whole mesh.
 uniform sampler2D myTextureSampler;
-uniform vec3 ambientLight;
-uniform vec3 diffuseLightColor;
-uniform vec3 specularLightColor;
-uniform vec3 lightPositionWorld;
-uniform vec3 eyePositionWorld;
 
-// Interpolated values from the vertex shaders
-in vec2 UV;
-in vec3 worldPosition;
-in vec3 cameraNormalSpace;
-in vec3 eyeDirection;
-in vec3 lightDirection;
+uniform vec3 lightPosition;
+uniform float specularCoefficient;
+uniform float diffuseCoefficient;
 
+vec3 diffuseLight, ambientLight, specularLight;
+float ambientCoefficient = 0.5f;
 
 void main(){
+  vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+  color = vec3(0.0f, 0.0f, 0.0f);
 
-	vec3 LightColor = vec3(1,1,1);
-	float LightPower = 50.0f;
+  diffuseLight = texture( myTextureSampler, UV ).rgb;
+  ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
+  specularLight = vec3(specularCoefficient, specularCoefficient, specularCoefficient);
 
-	vec3 MaterialDiffuseColor = texture(myTextureSampler, UV).rgb ;
-	vec3 MaterialAmbientColor = ambientLight * MaterialDiffuseColor;
-	vec3 MaterialSpecularColor = specularLightColor;
-	
-	float distance = length( lightPositionWorld - worldPosition );
-	
-	vec3 n = normalize(cameraNormalSpace);
-	vec3 l = normalize( lightPositionWorld );
-	
+  float lightDistance = length(lightPosition - worldPos);
 
-	float cosTheta = clamp( dot( l, n), 0,1 );
+  // For bump mapping
+  // if(planeRender == 1.0f){
+  //   vec3 tangentTexture = normalize(texture(textureNormal, vec2(UV.x, -UV.y)).rgb * 2.0f - 1.0f);
+  //   vec3 N = tangentTexture;
+  //   vec3 L = normalize(lightTangent);
+  //   float cosTheta = clamp(dot(N, L), 0, 1);
+  //
+  //   vec3 V = normalize(eyeTangent);
+  //   vec3 R = reflect(-L, N);
+  //   float cosAlpha = clamp(dot(V, R), 0, 1);
+  //
+  //   color = diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
+  //           + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
+  // }
 
-	vec3 E = normalize(eyeDirection);
-	// Direction in which the triangle reflects the light
-	vec3 R = reflect(-l,n);
-	
-	float cosAlpha = clamp( dot( E,R ), 0,1 );
-	
-	color = 
-		// ambient
-		MaterialAmbientColor +
-		// diffuse
-		diffuseLightColor * MaterialDiffuseColor * LightColor * LightPower * cosTheta / (distance*distance) +
-		// specular
-		MaterialSpecularColor * LightColor * LightPower * pow(cosAlpha,15) / (distance*distance);
+  vec3 N = normalize(cameraNormal);
+  vec3 L = normalize(lightDirection);
+  float cosTheta = clamp(dot(N, L), 0, 1);
+
+  vec3 V = normalize(cameraEye);
+  vec3 R = reflect(-L, N);
+  float cosAlpha = clamp(dot(V, R), 0, 1);
+
+  color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
+          + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
 }

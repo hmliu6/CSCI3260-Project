@@ -84,7 +84,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>opengl32.lib;freeglut.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>C:\Users\Alpha\Desktop\project\project\Dependencies\freeglut;C:\Users\Alpha\Desktop\project\project\Dependencies\glm;C:\Users\Alpha\Desktop\project\project\Dependencies\glew;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>C:\Users\Alpha\Desktop\project\project\Library\Dependencies\freeglut;C:\Users\Alpha\Desktop\project\project\Library\Dependencies\glm;C:\Users\Alpha\Desktop\project\project\Library\Dependencies\glew;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -114,11 +114,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="FragmentShaderCode.glsl" />
     <None Include="VertexShaderCode.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Library\compute.cpp" />
+    <ClCompile Include="Library\gesture.cpp" />
+    <ClCompile Include="Library\objLoader.cpp" />
+    <ClCompile Include="Library\programChecker.cpp" />
+    <ClCompile Include="Library\textureLoader.cpp" />
     <ClCompile Include="main.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Library\compute.hpp" />
+    <ClInclude Include="Library\gesture.hpp" />
+    <ClInclude Include="Library\objLoader.hpp" />
+    <ClInclude Include="Library\programChecker.hpp" />
+    <ClInclude Include="Library\textureLoader.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
