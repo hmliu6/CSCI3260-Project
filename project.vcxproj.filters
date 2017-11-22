@@ -66,5 +66,11 @@
     <ClInclude Include="Library\gesture.hpp">
       <Filter>Resource Files</Filter>
     </ClInclude>
+    <ClInclude Include="Library\cameraPosition.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Library\constant.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

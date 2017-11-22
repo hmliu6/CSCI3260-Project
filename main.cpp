@@ -16,11 +16,13 @@
 #include <vector>
 #include <cmath>
 
+#include "Library/constant.h"
 #include "Library/programChecker.hpp"
 #include "Library/gesture.hpp"
 #include "Library/objLoader.hpp"
 #include "Library/textureLoader.hpp"
 #include "Library/compute.hpp"
+#include "Library/cameraPosition.h"
 
 using namespace std;
 
@@ -143,10 +145,15 @@ Object *earth = nullptr;
 // MUST create new object in main and point to variables
 
 // Camera Matrix
+CameraPosition cameraPosition = {
+	20.0f, 15.0f, 20.0f,
+	0.0f, 0.0f, 0.0f,
+};
+
 void eyeViewMatrix() {
 	glm::mat4 Projection = glm::perspective(glm::radians(45.0f), 1.0f, 2.0f, 40.0f);
 	glm::mat4 View = glm::lookAt(
-		glm::vec3(20.0f, 15.0f, 20.0f), // Camera is at (x,y,z), in World Space
+		glm::vec3(cameraPosition.x, cameraPosition.y, cameraPosition.z), // Camera is at (x,y,z), in World Space
 		glm::vec3(0.0f, 2.0f, 0.0f), // and looks at point
 		glm::vec3(0.0f, 1.0f, 0.0f)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
@@ -238,7 +245,7 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
 	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	glutInitWindowSize(1024, 768);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
 	glewInit();
 

@@ -130,7 +130,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Library\cameraPosition.h" />
     <ClInclude Include="Library\compute.hpp" />
+    <ClInclude Include="Library\constant.h" />
     <ClInclude Include="Library\gesture.hpp" />
     <ClInclude Include="Library\objLoader.hpp" />
     <ClInclude Include="Library\programChecker.hpp" />
