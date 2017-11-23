@@ -35,6 +35,7 @@ class Object {
 public:
 	// Class constructor
 	Object() {
+		//objIndex = globalCounter++;
 		glGenBuffers(1, &VAObuffer);
 		glGenBuffers(1, &vertexVBO);
 		glGenBuffers(1, &uvVBO);
@@ -42,6 +43,7 @@ public:
 		modelScalingMatrix = glm::mat4(1.0f);
 		modelTransformMatrix = glm::mat4(1.0f);
 		modelRotationMatrix = glm::mat4(1.0f);
+		normalMapFlag = 0;
 	}
 
 	// Pass all object data to buffer
@@ -78,10 +80,19 @@ public:
 	// Pass all texture data to buffer
 	void loadTextureToBuffer(char * texturePath) {
 		objectTexture = loadBMP_custom(texturePath);
-		TextureID = glGetUniformLocation(programID, "myTextureSampler");
+		TextureID = glGetUniformLocation(programID, "colorTexture");
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, objectTexture);
 		glUniform1i(TextureID, 0);
+	}
+
+	void loadNormalTextureToBuffer(char * texturePath) {
+		objectNormalTexture = loadBMP_custom(texturePath);
+		NormalTextureID = glGetUniformLocation(programID, "normalMap");
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
+		glUniform1i(NormalTextureID, 1);
+		normalMapFlag = 1;
 	}
 
 	// Scaling
@@ -115,6 +126,9 @@ public:
 		glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
 		glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
 
+		normalMapFlagID = glGetUniformLocation(programID, "normalMapFlag");
+		glUniform1i(normalMapFlagID, normalMapFlag);
+		//printf("%i\n",normalMapFlag);
 
 	}
 
@@ -127,8 +141,13 @@ public:
 
 private:
 	// Put all variables declaration here
+	//static short globalCounter;
+	//GLushort objIndex;
+
 	GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
-	GLuint objectTexture, TextureID;
+	GLuint objectTexture, TextureID, objectNormalTexture, NormalTextureID;
+	GLuint normalMapFlagID;
+	GLushort normalMapFlag;
 
 	GLsizei drawSize;
 
@@ -174,7 +193,7 @@ void eyeViewMatrix() {
 }
 
 void lightControl() {
-	glm::vec3 lightPosition = glm::vec3(0.0f, 8.0f, -2.0f);
+	glm::vec3 lightPosition = glm::vec3(2.5f, 12.5f, 5.5f);
 
 	GLuint LightID = glGetUniformLocation(programID, "lightPosition");
 	glUniform3f(LightID, lightPosition.x, lightPosition.y, lightPosition.z);
@@ -199,8 +218,9 @@ void objDataToOpenGL() {
 	// Load earth
 	earth->loadObjToBuffer("obj/planet.obj");
 	earth->loadTextureToBuffer("texture/earth.bmp");
-	earth->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	earth->setTransform(glm::vec3(5.0f, 5.3f, -1.0f));
+	earth->loadNormalTextureToBuffer("normal_map/earth_normal.bmp");
+	earth->setScale(glm::vec3(2.5f, 2.5f, 2.5f));
+	earth->setTransform(glm::vec3(2.0f, 5.3f, 5.0f));
 	//
 
 }

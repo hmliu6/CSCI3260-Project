@@ -8,7 +8,9 @@ in vec3 cameraNormal;
 
 out vec3 color;
 
-uniform sampler2D myTextureSampler;
+uniform sampler2D colorTexture;
+uniform sampler2D normalMap;
+uniform bool normalMapFlag;
 
 uniform vec3 lightPosition;
 uniform float specularCoefficient;
@@ -20,36 +22,33 @@ float ambientCoefficient = 0.5f;
 void main(){
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
   color = vec3(0.0f, 0.0f, 0.0f);
+  
+  
 
-  diffuseLight = texture( myTextureSampler, UV ).rgb;
+  
+  diffuseLight = texture( colorTexture, UV ).rgb;
   ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
   specularLight = vec3(specularCoefficient, specularCoefficient, specularCoefficient);
 
   float lightDistance = length(lightPosition - worldPos);
 
-  // For bump mapping
-  // if(planeRender == 1.0f){
-  //   vec3 tangentTexture = normalize(texture(textureNormal, vec2(UV.x, -UV.y)).rgb * 2.0f - 1.0f);
-  //   vec3 N = tangentTexture;
-  //   vec3 L = normalize(lightTangent);
-  //   float cosTheta = clamp(dot(N, L), 0, 1);
-  //
-  //   vec3 V = normalize(eyeTangent);
-  //   vec3 R = reflect(-L, N);
-  //   float cosAlpha = clamp(dot(V, R), 0, 1);
-  //
-  //   color = diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
-  //           + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
-  // }
 
-  vec3 N = normalize(cameraNormal);
+
+  vec3 N = normalize(worldPos);
   vec3 L = normalize(lightDirection);
+  // For bump mapping
+  if(normalMapFlag){
+	//vec3 normal = normalize(worldPos);
+	N = texture(normalMap, UV).rgb;
+	N = normalize(N*2.0 -1.0);
+  }
   float cosTheta = clamp(dot(N, L), 0, 1);
 
   vec3 V = normalize(cameraEye);
   vec3 R = reflect(-L, N);
   float cosAlpha = clamp(dot(V, R), 0, 1);
 
-  color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
+  color += ambientLight
+		  + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
           + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
 }
