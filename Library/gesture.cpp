@@ -16,6 +16,10 @@ using namespace std;
  extern float specularCoefficient, diffuseCoefficient;
  GLushort passiveMouseMode = 0;
  extern CameraPosition cameraPosition;
+float radius = 30.0f;
+float initViewHorizontal = -90.0f;
+float initViewVertical = -90.0f;
+float viewRotateDegree[3] = { 0.0f, 0.0f, 0.0f };
 
 void keyboardClick(unsigned char key, int x, int y){
 	if (key == ' ')
@@ -48,5 +52,27 @@ void mouseCoordinate(int x, int y){
 	if (passiveMouseMode == 1) {
 		cameraPosition.x = glm::clamp((WINDOW_WIDTH / 2.0f - x) / 5.0f, -50.0f, 50.0f);
 		cameraPosition.y = glm::clamp((WINDOW_HEIGHT / 2.0f - y) / 5.0f, 0.0f, 70.0f);
+	}
+}
+
+void Mouse_Wheel_Func(int button, int state, int x, int y)
+{
+	if ((button == 3) || (button == 4))
+	{
+		if (state == GLUT_UP) return;
+		if (button == 3)
+		{
+			radius -= 1.0f;
+			cameraPosition.x = radius* cos(glm::radians(initViewHorizontal + viewRotateDegree[1]))*sin(glm::radians(initViewVertical + viewRotateDegree[0]));
+			cameraPosition.y = radius* cos(glm::radians(initViewVertical + viewRotateDegree[0]));
+			cameraPosition.z = radius* sin(glm::radians(initViewHorizontal + viewRotateDegree[1]))*sin(glm::radians(initViewVertical + viewRotateDegree[0]));
+		}
+		else
+		{
+			radius += 1.0f;
+			cameraPosition.x = radius* cos(glm::radians(initViewHorizontal + viewRotateDegree[1]))*sin(glm::radians(initViewVertical + viewRotateDegree[0]));
+			cameraPosition.y = radius* cos(glm::radians(initViewVertical + viewRotateDegree[0]));
+			cameraPosition.z = radius* sin(glm::radians(initViewHorizontal + viewRotateDegree[1]))*sin(glm::radians(initViewVertical + viewRotateDegree[0]));
+		}
 	}
 }

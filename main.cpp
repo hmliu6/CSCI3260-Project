@@ -30,6 +30,7 @@ using namespace std;
 // ProgramID passed from installShaders()
 GLint programID;
 float specularCoefficient = 0.1f, diffuseCoefficient = 50.0f;
+float earth_innRot_Degree = 0.0f;
 
 class Object {
 public:
@@ -251,6 +252,8 @@ void drawScreen() {
 	// Standard step to draw one object
 	jeep->sendMatrix();
 	jeep->renderObject();
+
+	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
 	earth->sendMatrix();
 	earth->renderObject();
 	//
@@ -260,6 +263,15 @@ void drawScreen() {
 	glutPostRedisplay();
 }
 
+// Timer function
+void timerFunction(int id)
+{
+	earth_innRot_Degree += 0.0003f;
+	//printf("%f\n",earth_innRot_Degree);
+
+	glutPostRedisplay();
+	glutTimerFunc(700.0f / 60.0f, timerFunction, 1);
+}
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
@@ -277,9 +289,12 @@ int main(int argc, char *argv[]) {
 	glutDisplayFunc(drawScreen);
 
 	// Mouse and keyboard functions are in Library/gesture.cpp
+	glutMouseFunc(Mouse_Wheel_Func);
 	glutKeyboardFunc(keyboardClick);
 	glutSpecialFunc(arrowKey);
 	glutPassiveMotionFunc(mouseCoordinate);
+
+	glutTimerFunc(700.0f / 60.0f, timerFunction, 1);
 
 	glutMainLoop();
 	return 0;

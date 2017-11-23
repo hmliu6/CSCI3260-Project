@@ -7,4 +7,6 @@ void arrowKey(int key, int x, int y);
 
 void mouseCoordinate(int x, int y);
 
+void Mouse_Wheel_Func(int button, int state, int x, int y)
+
 #endif

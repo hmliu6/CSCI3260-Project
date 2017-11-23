@@ -34,7 +34,7 @@ void main(){
 
 
 
-  vec3 N = normalize(worldPos);
+  vec3 N = normalize(cameraNormal);
   vec3 L = normalize(lightDirection);
   // For bump mapping
   if(normalMapFlag){
@@ -50,5 +50,5 @@ void main(){
 
   color += ambientLight
 		  + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
-          + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
+          + specularLight * lightColor * 50.0f * pow(cosAlpha, 50) / (lightDistance * lightDistance);
 }
