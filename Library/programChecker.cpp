@@ -2,10 +2,9 @@
 	#include <GL/glew.h>
 #elif defined _WIN32 || defined _WIN64
 	#include "Dependencies/glew/glew.h"	
-#endif 
+#endif
 
 #include <stdlib.h>
-
 #include <iostream>
 #include <fstream>
 using namespace std;
@@ -54,15 +53,15 @@ string readShaderCode(const char* fileName){
 	);
 }
 
-GLuint installShaders(){
+GLuint installShaders(char *vertexShader, char *fragmentShader){
 	GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 	GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 	const GLchar* adapter[1];
-	string temp = readShaderCode("VertexShaderCode.glsl");
+	string temp = readShaderCode(vertexShader);
 	adapter[0] = temp.c_str();
 	glShaderSource(vertexShaderID, 1, adapter, 0);
-	temp = readShaderCode("FragmentShaderCode.glsl");
+	temp = readShaderCode(fragmentShader);
 	adapter[0] = temp.c_str();
 	glShaderSource(fragmentShaderID, 1, adapter, 0);
 

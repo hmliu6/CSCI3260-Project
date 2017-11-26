@@ -16,6 +16,6 @@ bool checkProgramStatus(GLuint programID);
 
 string readShaderCode(const char* fileName);
 
-GLuint installShaders();
+GLuint installShaders(char *vertexShader, char *fragmentShader);
 
 #endif
