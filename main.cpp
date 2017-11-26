@@ -28,7 +28,7 @@
 using namespace std;
 
 // ProgramID passed from installShaders()
-GLint programID, skyboxProgramID;
+GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.1f, diffuseCoefficient = 50.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
@@ -383,7 +383,9 @@ void initOpenGL(){
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   programID = installShaders("VertexShaderCode.glsl", "FragmentShaderCode.glsl");
+  lightSourceProgramID = installShaders("VertexShaderCode.glsl", "LightSourceFragmentShader.glsl");
   skyboxProgramID = installShaders("SkyBoxVertexShaderCode.glsl", "SkyBoxFragmentShader.glsl");
+  
   objDataToOpenGL();
 }
 
@@ -403,11 +405,11 @@ void drawScreen(){
 	earth->sendMatrix(programID);
 	earth->renderObject();
 
-  eyeViewMatrix(programID);
+  eyeViewMatrix(lightSourceProgramID);
   sun->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
   lightPosition = sun->getGlobalOrigin();
   lightControl();
-	sun->sendMatrix(programID);
+	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
   // Order of sending matrices must NOT be changed
