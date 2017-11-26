@@ -408,7 +408,7 @@ void timerFunction(int id){
 int main(int argc, char *argv[]){
   glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode( GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
 	glewInit();
