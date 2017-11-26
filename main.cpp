@@ -400,13 +400,13 @@ void drawScreen(){
 
   eyeViewMatrix(programID);
   earth->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
-  lightPosition = sun->getGlobalOrigin();
-  lightControl();
 	earth->sendMatrix(programID);
 	earth->renderObject();
 
   eyeViewMatrix(programID);
   sun->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
+  lightPosition = sun->getGlobalOrigin();
+  lightControl();
 	sun->sendMatrix(programID);
 	sun->renderObject();
 
