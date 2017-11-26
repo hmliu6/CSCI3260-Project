@@ -33,8 +33,10 @@ float specularCoefficient = 0.1f, diffuseCoefficient = 50.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
-	16.0f, 15.0f, 25.0f,
-	0.0f, 0.0f, 0.0f};
+	10.0f, 20.0f, 30.0f,
+  0.0f, 0.0f, 0.0f};
+
+glm::vec3 lightPosition = glm::vec3(0, 0, 0);
 
 float earth_innRot_Degree = 0.0f;
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
@@ -101,6 +103,13 @@ class Object{
       glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
       glUniform1i(NormalTextureID, 1);
       normalMapFlag = 1;
+    }
+
+    glm::vec3 getGlobalOrigin(){
+      glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
+      glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
+      globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
+      return globalOrigin;
     }
 
     // Scaling
@@ -291,6 +300,7 @@ class Skybox: public Object{
 // C++ restricted to global class object declaration
 Object *jeep = nullptr;
 Object *earth = nullptr;
+Object *sun = nullptr;
 Skybox *background = nullptr;
 // MUST create new object in main and point to variables
 
@@ -319,8 +329,6 @@ void eyeViewMatrix(GLint shaderProgramID){
 }
 
 void lightControl(){
-  glm::vec3 lightPosition = glm::vec3(2.5f, 12.5f, 5.5f);
-
 	GLuint LightID = glGetUniformLocation(programID, "lightPosition");
 	glUniform3f(LightID, lightPosition.x, lightPosition.y, lightPosition.z);
 
@@ -336,16 +344,23 @@ void objDataToOpenGL(){
   // Standard steps to pass one object and its texture
   jeep->loadObjToBuffer("resource/jeep/jeep.obj");
   jeep->loadTextureToBuffer("resource/jeep/jeep_texture.bmp");
-  jeep->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-  jeep->setTransform(glm::vec3(2.0f, 0.3f, -1.0f));
+  jeep->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+  jeep->setTransform(glm::vec3(2.0f, 0.3f, -5.0f));
   //
 
   // Load earth
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp");
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp");
-	earth->setScale(glm::vec3(2.5f, 2.5f, 2.5f));
+	earth->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
 	earth->setTransform(glm::vec3(2.0f, 5.3f, 5.0f));
+	//
+
+  // Load sun
+	sun->loadObjToBuffer("resource/sun/planet.obj");
+	sun->loadTextureToBuffer("resource/sun/sun.bmp");
+	sun->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	sun->setTransform(glm::vec3(0.0f, 7.3f, -5.0f));
 	//
 
   background->loadVerticesToBuffer(100.0f);
@@ -385,8 +400,15 @@ void drawScreen(){
 
   eyeViewMatrix(programID);
   earth->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
+  lightPosition = sun->getGlobalOrigin();
+  lightControl();
 	earth->sendMatrix(programID);
 	earth->renderObject();
+
+  eyeViewMatrix(programID);
+  sun->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
+	sun->sendMatrix(programID);
+	sun->renderObject();
 
   // Order of sending matrices must NOT be changed
   eyeViewMatrix(skyboxProgramID);
@@ -409,7 +431,7 @@ void timerFunction(int id){
 int main(int argc, char *argv[]){
   glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	// glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
 	glewInit();
@@ -417,6 +439,7 @@ int main(int argc, char *argv[]){
   // Create object and point to global variables
   jeep = new Object;
   earth = new Object;
+  sun = new Object;
   background = new Skybox;
 
   initOpenGL();
