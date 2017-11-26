@@ -21,3 +21,7 @@ x64/*
 Debug/*
 .DS_Store*
 ._.DS_Store*
+
+
+Library\Dependencies\*
+Library/Dependencies/*
