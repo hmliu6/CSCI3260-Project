@@ -28,7 +28,7 @@
 using namespace std;
 
 // ProgramID passed from installShaders()
-GLint programID, skyboxProgramID;
+GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.1f, diffuseCoefficient = 50.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
@@ -328,14 +328,14 @@ void eyeViewMatrix(GLint shaderProgramID){
   glUniformMatrix4fv(VMID, 1, GL_FALSE, &VM[0][0]);
 }
 
-void lightControl(){
-	GLuint LightID = glGetUniformLocation(programID, "lightPosition");
+void lightControl(GLint shaderProgramID){
+	GLuint LightID = glGetUniformLocation(shaderProgramID, "lightPosition");
 	glUniform3f(LightID, lightPosition.x, lightPosition.y, lightPosition.z);
 
-  GLuint diffuseID = glGetUniformLocation(programID, "diffuseCoefficient");
+  GLuint diffuseID = glGetUniformLocation(shaderProgramID, "diffuseCoefficient");
 	glUniform1f(diffuseID, diffuseCoefficient);
 
-	GLuint specularID = glGetUniformLocation(programID, "specularCoefficient");
+	GLuint specularID = glGetUniformLocation(shaderProgramID, "specularCoefficient");
 	glUniform1f(specularID, specularCoefficient);
 }
 
@@ -383,7 +383,9 @@ void initOpenGL(){
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
   programID = installShaders("VertexShaderCode.glsl", "FragmentShaderCode.glsl");
+  lightSourceProgramID = installShaders("VertexShaderCode.glsl", "LightSourceFragmentShader.glsl");
   skyboxProgramID = installShaders("SkyBoxVertexShaderCode.glsl", "SkyBoxFragmentShader.glsl");
+  
   objDataToOpenGL();
 }
 
@@ -392,6 +394,8 @@ void drawScreen(){
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  lightPosition = sun->getGlobalOrigin();
+
   // Standard step to draw one object
   eyeViewMatrix(programID);
   jeep->sendMatrix(programID);
@@ -399,15 +403,14 @@ void drawScreen(){
   //
 
   eyeViewMatrix(programID);
-  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
+  lightControl(programID);
+  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	earth->sendMatrix(programID);
 	earth->renderObject();
 
-  eyeViewMatrix(programID);
-  sun->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
-  lightPosition = sun->getGlobalOrigin();
-  lightControl();
-	sun->sendMatrix(programID);
+  eyeViewMatrix(lightSourceProgramID);
+  lightControl(lightSourceProgramID);
+	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
   // Order of sending matrices must NOT be changed
