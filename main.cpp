@@ -142,7 +142,7 @@ class Object{
       glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
       glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
       glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
-    
+
       GLuint normalMapFlagID = glGetUniformLocation(programID, "normalMapFlag");
       glUniform1i(normalMapFlagID, normalMapFlag);
     }
@@ -182,7 +182,7 @@ class Skybox: public Object{
 
     void loadVerticesToBuffer(float size){
       GLfloat points[] = {
-        // positions          
+        // positions
         -1.0f,  1.0f, -1.0f,
         -1.0f, -1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
@@ -239,13 +239,13 @@ class Skybox: public Object{
 	    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
     }
-  
+
     void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
       vector<const GLchar*> skyfaces;
       skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
       skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
       skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
-      
+
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
       int width, height;
@@ -267,7 +267,7 @@ class Skybox: public Object{
 
     void renderSkybox(){
       glm::mat4 tempView = View;
-      
+
       glUseProgram(skyboxProgramID);
       glDepthMask(GL_FALSE);
       glDisable(GL_CULL_FACE);
