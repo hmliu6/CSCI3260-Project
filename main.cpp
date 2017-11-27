@@ -328,14 +328,14 @@ void eyeViewMatrix(GLint shaderProgramID){
   glUniformMatrix4fv(VMID, 1, GL_FALSE, &VM[0][0]);
 }
 
-void lightControl(){
-	GLuint LightID = glGetUniformLocation(programID, "lightPosition");
+void lightControl(GLint shaderProgramID){
+	GLuint LightID = glGetUniformLocation(shaderProgramID, "lightPosition");
 	glUniform3f(LightID, lightPosition.x, lightPosition.y, lightPosition.z);
 
-  GLuint diffuseID = glGetUniformLocation(programID, "diffuseCoefficient");
+  GLuint diffuseID = glGetUniformLocation(shaderProgramID, "diffuseCoefficient");
 	glUniform1f(diffuseID, diffuseCoefficient);
 
-	GLuint specularID = glGetUniformLocation(programID, "specularCoefficient");
+	GLuint specularID = glGetUniformLocation(shaderProgramID, "specularCoefficient");
 	glUniform1f(specularID, specularCoefficient);
 }
 
@@ -394,6 +394,8 @@ void drawScreen(){
   glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+  lightPosition = sun->getGlobalOrigin();
+
   // Standard step to draw one object
   eyeViewMatrix(programID);
   jeep->sendMatrix(programID);
@@ -401,14 +403,13 @@ void drawScreen(){
   //
 
   eyeViewMatrix(programID);
-  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
+  lightControl(programID);
+  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	earth->sendMatrix(programID);
 	earth->renderObject();
 
   eyeViewMatrix(lightSourceProgramID);
-  sun->setSelfRotate(glm::vec3(0, 1, 0), 0.01);
-  lightPosition = sun->getGlobalOrigin();
-  lightControl();
+  lightControl(lightSourceProgramID);
 	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 

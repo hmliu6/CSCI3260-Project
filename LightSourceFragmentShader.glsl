@@ -39,9 +39,5 @@ void main(){
 
   float cosTheta = clamp(dot(N, L), 0, 1);
 
-  vec3 V = normalize(cameraEye);
-  vec3 R = reflect(-L, N);
-  float cosAlpha = clamp(dot(V, R), 0, 1);
-
   color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance);
 }
