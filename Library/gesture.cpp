@@ -8,7 +8,7 @@
 #include <cmath>
 #include "Dependencies/glm/glm.hpp"
 #include "cameraPosition.h"
-#include "constant.h"
+#include "constant.hpp"
 
 using namespace std;
 
