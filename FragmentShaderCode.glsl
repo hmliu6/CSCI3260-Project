@@ -50,7 +50,7 @@ void main(){
 
   if(normalMapFlag){
     N = texture(normalMap, UV).rgb;
-    N = normalize(N * 2.0 -1.0);
+    N = normalize(N * 2.0);
   }
 
   float cosTheta = clamp(dot(N, L), 0, 1);

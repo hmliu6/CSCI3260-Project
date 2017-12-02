@@ -30,10 +30,11 @@ using namespace std;
 GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.5f, diffuseCoefficient = 170.0f;
 float cameraPosAngle = 71.0f;
+float orbitalTheta = 0.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
-	40.0f, 20.0f, 40.0f,
+	60.0f, 20.0f, 60.0f,
   0.0f, 0.0f, 0.0f };
 
 glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -347,7 +348,7 @@ void createRandomModel(glm::vec3 modelOrigin) {
 
 // Camera Matrix
 void eyeViewMatrix(GLint shaderProgramID) {
-	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 60.0f);
+	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 80.0f);
 	View = glm::lookAt(
 		glm::vec3(cameraPosition.x * cos(cameraPosAngle), cameraPosition.y, cameraPosition.z * sin(cameraPosAngle)), // Camera is at (x,y,z), in World Space
 		glm::vec3(0.0f, 0.0f, 0.0f), // and looks at point
@@ -394,7 +395,7 @@ void objDataToOpenGL() {
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
 	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
-	earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
+	// earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
   //
   
   saturn->loadObjToBuffer("resource/saturn/planet.obj");
@@ -444,6 +445,7 @@ void initOpenGL() {
 
 // Keep looping to draw on screen
 void drawScreen() {
+  orbitalTheta += 0.01f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -467,7 +469,8 @@ void drawScreen() {
   glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
-	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
+  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
+  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), 0.0f, 10.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
   
