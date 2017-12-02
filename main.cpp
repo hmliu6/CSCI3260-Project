@@ -29,11 +29,11 @@ using namespace std;
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 1.0f, diffuseCoefficient = 80.0f;
-float cameraPosAngle = 71.5f;
+float cameraPosAngle = 71.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
-	30.0f, 20.0f, 30.0f,
+	40.0f, 20.0f, 40.0f,
   0.0f, 0.0f, 0.0f };
 
 glm::vec3 lightPosition = glm::vec3(0, 0, 0);
@@ -310,13 +310,14 @@ class Skybox : public Object {
 Object *jeep = nullptr;
 Object *earth = nullptr;
 Object *sun = nullptr;
+Object *saturn = nullptr;
 Object *rock = nullptr;
 glm::mat4* rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 Skybox *background = nullptr;
 // MUST create new object in main and point to variables
 
 // ring cloud location creation
-void createRandomModel() {
+void createRandomModel(glm::vec3 modelOrigin) {
 	rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 	srand(glutGet(GLUT_ELAPSED_TIME)); // initialize random seed	
 	GLfloat radius = 6.0f;
@@ -336,7 +337,7 @@ void createRandomModel() {
 		GLfloat scale = (rand() % 10) / 100.0f + 0.05;
 		GLfloat rotAngle = (rand() % 360);
 
-		model = glm::translate(model, glm::vec3(x, y, z));
+		model = glm::translate(model, glm::vec3(modelOrigin.x + x, modelOrigin.y + y, modelOrigin.z + z));
 		model = glm::scale(model, glm::vec3(scale));
 		model = glm::rotate(model, rotAngle, glm::vec3(0.2f, 0.4f, 0.8f));
 
@@ -394,7 +395,12 @@ void objDataToOpenGL() {
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
 	earth->setScale(glm::vec3(0.6f, 0.6f, 0.6f));
 	earth->setTransform(glm::vec3(14.0f, 0.0f, 2.0f));
-	//
+  //
+  
+  saturn->loadObjToBuffer("resource/saturn/planet.obj");
+  saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
+  saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
+  saturn->setTransform(glm::vec3(-9.0f, 12.0f, -6.0f));
 
   // Load sun
 	sun->loadObjToBuffer("resource/sun/planet.obj");
@@ -405,9 +411,7 @@ void objDataToOpenGL() {
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
 	rock->loadTextureToBuffer("resource/rock/rock.bmp", programID);
-	createRandomModel();
-	//rock->setScale(glm::vec3(0.1f, 0.1f, 0.1f));
-	//rock->setTransform(glm::vec3(0.0f, 7.3f, -3.0f));
+	createRandomModel(glm::vec3(-9.0f, 12.0f, -6.0f));
 
 
 	background->loadVerticesToBuffer(100.0f);
@@ -454,7 +458,7 @@ void drawScreen() {
 	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++){
 		eyeViewMatrix(programID);
 		rock->setModelMatrix(rockMatrices[i]);
-		rock->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+		rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
 		rock->sendMatrix(programID);
 		rock->renderObject();
 	}
@@ -463,7 +467,13 @@ void drawScreen() {
 	lightControl(programID);
 	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	earth->sendMatrix(programID);
-	earth->renderObject();
+  earth->renderObject();
+  
+  eyeViewMatrix(programID);
+	lightControl(programID);
+	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.1);
+	saturn->sendMatrix(programID);
+  saturn->renderObject();
 
   glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
@@ -504,7 +514,8 @@ int main(int argc, char *argv[]) {
 	// Create object and point to global variables
 	jeep = new Object;
 	earth = new Object;
-	sun = new Object;
+  sun = new Object;
+  saturn = new Object;
 	rock = new Object;
 	background = new Skybox;
 
