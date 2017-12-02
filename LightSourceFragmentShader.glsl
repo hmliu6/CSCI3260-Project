@@ -17,27 +17,14 @@ uniform float specularCoefficient;
 uniform float diffuseCoefficient;
 
 vec3 diffuseLight, ambientLight, specularLight;
-float ambientCoefficient = 1.0f;
+float ambientCoefficient = 100.0f;
 
 void main(){
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
   color = vec3(0.0f, 0.0f, 0.0f);
 
-  diffuseLight = texture( colorTexture, UV ).rgb;
+  diffuseLight = texture( colorTexture, UV ).rgb + 10000.0f;
   ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
-  specularLight = vec3(specularCoefficient, specularCoefficient, specularCoefficient);
 
-  float lightDistance = length(lightPosition - worldPos);
-  
-  vec3 N = normalize(cameraNormal);
-  vec3 L = normalize(lightDirection);
-
-  if(normalMapFlag){
-    N = texture(normalMap, UV).rgb;
-    N = normalize(N * 2.0 -1.0);
-  }
-
-  float cosTheta = clamp(dot(N, L), 0, 1);
-
-  color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance);
+  color = ambientLight;
 }
