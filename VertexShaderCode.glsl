@@ -31,16 +31,18 @@ void main()
 
   UV = vertexUV;
 
-  // Calculation for lighting
-  worldPos = (modelMatrix * v).xyz;
+  mat4 modelMat = RotationMatrix * TransformMatrix * ScalingMatrix;
 
-  vec3 cameraPos = (viewMatrix * modelMatrix * v).xyz;
+  // Calculation for lighting
+  worldPos = (modelMat * v).xyz;
+
+  vec3 cameraPos = (viewMatrix * modelMat * v).xyz;
   cameraEye = vec3(0.0f, 0.0f, 0.0f) - cameraPos;
 
   vec3 cameraLight = (viewMatrix * vec4(lightPosition, 1.0f)).xyz;
   lightDirection = cameraLight + cameraEye;
 
-  cameraNormal = (viewMatrix * modelMatrix * vec4(normal, 0.0f)).xyz;
+  cameraNormal = (viewMatrix * modelMat * vec4(normal, 0.0f)).xyz;
 
   // Plane rendering for bump mapping
   // if(planeRender == 1.0f){

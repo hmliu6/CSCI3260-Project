@@ -400,7 +400,7 @@ void objDataToOpenGL() {
 	sun->loadObjToBuffer("resource/sun/planet.obj");
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
 	sun->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	sun->setTransform(glm::vec3(0.0f, 7.3f, -5.0f));
+	sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
@@ -450,6 +450,7 @@ void drawScreen() {
 	// jeep->renderObject();
   //
 
+  glUseProgram(programID);
 	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++){
 		eyeViewMatrix(programID);
 		rock->setModelMatrix(rockMatrices[i]);
@@ -464,12 +465,14 @@ void drawScreen() {
 	earth->sendMatrix(programID);
 	earth->renderObject();
 
+  glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
 	lightControl(lightSourceProgramID);
 	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
-	// Order of sending matrices must NOT be changed
+  // Order of sending matrices must NOT be changed
+  glUseProgram(skyboxProgramID);
 	eyeViewMatrix(skyboxProgramID);
 	background->renderSkybox();
 
