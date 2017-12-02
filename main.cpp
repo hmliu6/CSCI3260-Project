@@ -28,12 +28,12 @@ using namespace std;
 
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
-float specularCoefficient = 0.0f, diffuseCoefficient = 80.0f;
+float specularCoefficient = 0.5f, diffuseCoefficient = 170.0f;
 float cameraPosAngle = 71.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
-	35.0f, 20.0f, 35.0f,
+	40.0f, 20.0f, 40.0f,
   0.0f, 0.0f, 0.0f };
 
 glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -393,15 +393,15 @@ void objDataToOpenGL() {
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
-	earth->setScale(glm::vec3(2.0f, 2.0f, 2.0f));
-	earth->setTransform(glm::vec3(14.0f, 0.0f, 2.0f));
+	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
+	earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
   //
   
   saturn->loadObjToBuffer("resource/saturn/planet.obj");
   saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
   saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
   saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
-  saturn->setTransform(glm::vec3(-9.0f, 7.0f, -6.0f));
+  saturn->setTransform(glm::vec3(-9.0f, 7.0f, 0.0f));
 
   // Load sun
 	sun->loadObjToBuffer("resource/sun/planet.obj");
@@ -412,7 +412,7 @@ void objDataToOpenGL() {
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
 	rock->loadTextureToBuffer("resource/rock/rock.bmp", programID);
-	createRandomModel(glm::vec3(-9.0f, 7.0f, -6.0f));
+	createRandomModel(glm::vec3(-9.0f, 7.0f, 0.0f));
 
 
 	background->loadVerticesToBuffer(100.0f);

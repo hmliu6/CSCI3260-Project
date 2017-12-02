@@ -17,7 +17,7 @@ uniform float specularCoefficient;
 uniform float diffuseCoefficient;
 
 vec3 diffuseLight, ambientLight, specularLight;
-float ambientCoefficient = 0.3f;
+float ambientCoefficient = 0.4f;
 
 void main(){
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
@@ -60,5 +60,5 @@ void main(){
   float cosAlpha = clamp(dot(V, R), 0, 1);
 
   color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / distanceParams
-          + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / distanceParams;
+          + specularLight * lightColor * 20.0f * pow(cosAlpha, 10) / distanceParams;
 }
