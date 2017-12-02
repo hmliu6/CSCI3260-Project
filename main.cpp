@@ -28,7 +28,7 @@ using namespace std;
 
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
-float specularCoefficient = 0.1f, diffuseCoefficient = 50.0f;
+float specularCoefficient = 1.0f, diffuseCoefficient = 80.0f;
 float cameraPosAngle = 71.5f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
@@ -138,7 +138,7 @@ class Object {
     // Rotation with self object space
     void setSelfRotate(glm::vec3 axis, float thetaDegree) {
       glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-      modelScalingMatrix = selfRotateMatrix * tempScalingMatrix;
+      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
     }
 
     // Passing all matrices to Shader
@@ -392,14 +392,14 @@ void objDataToOpenGL() {
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
-	earth->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
-	earth->setTransform(glm::vec3(2.0f, 5.3f, 5.0f));
+	earth->setScale(glm::vec3(0.6f, 0.6f, 0.6f));
+	earth->setTransform(glm::vec3(14.0f, 0.0f, 2.0f));
 	//
 
   // Load sun
 	sun->loadObjToBuffer("resource/sun/planet.obj");
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
-	sun->setScale(glm::vec3(0.5f, 0.5f, 0.5f));
+	sun->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
 	sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
 
 	// Load rock
