@@ -23,7 +23,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Move around planet B for all rocks G
 * [ ] 3 distinct viewpoints for choices, i.e. -X, +X, +Y axis
 * [ ] Fog effect
-* [x] Graphical User Interface
+* [\] Graphical User Interface (need connect tot the actual function)
 * [ ] Keyboard Interactions, i.e. 'a', 's' and 'd' for switching viewpoints
 * [ ] Speed and orbital control, i.e. &uarr; and &darr; for speed controlling, &larr; and &rarr; for changing orbit size of space vehicle D
 * [ ] Mouse Interaction, i.e. zoom in and out
@@ -33,7 +33,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Add another visible light source with Phong Illumination Model
 * [ ] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [ ] Provide extra viewpoints attached to space vehicles
-* [ ] Real-time trajectory of space vehicle D with string
+* [ ] Real-time trajectory of space vehicle D with string (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
 * [ ] Asteroid ring cloud with more than 5000 random rocks around C
 * [ ] Shadow mapping, Environment mapping, Displacement mapping
 * [ ] Background music with **IrrKlang** library
