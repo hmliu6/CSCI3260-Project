@@ -28,15 +28,16 @@ using namespace std;
 
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
-float specularCoefficient = 1.0f, diffuseCoefficient = 80.0f;
+float specularCoefficient = 0.5f, diffuseCoefficient = 170.0f;
 float cameraPosAngle = 71.0f;
+float orbitalTheta = 0.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
-	40.0f, 20.0f, 40.0f,
+	60.0f, 20.0f, 60.0f,
   0.0f, 0.0f, 0.0f };
 
-glm::vec3 lightPosition = glm::vec3(0, 0, 0);
+glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 
 float earth_innRot_Degree = 0.0f;
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
@@ -347,10 +348,10 @@ void createRandomModel(glm::vec3 modelOrigin) {
 
 // Camera Matrix
 void eyeViewMatrix(GLint shaderProgramID) {
-	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 60.0f);
+	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 80.0f);
 	View = glm::lookAt(
 		glm::vec3(cameraPosition.x * cos(cameraPosAngle), cameraPosition.y, cameraPosition.z * sin(cameraPosAngle)), // Camera is at (x,y,z), in World Space
-		glm::vec3(0.0f, 5.0f, 0.0f), // and looks at point
+		glm::vec3(0.0f, 0.0f, 0.0f), // and looks at point
 		glm::vec3(0.0f, 1.0f, 0.0f)  // Head is up (set to 0,-1,0 to look upside-down)
 	);
 	glm::mat4 Model = glm::mat4(1.0f);
@@ -393,14 +394,15 @@ void objDataToOpenGL() {
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
-	earth->setScale(glm::vec3(0.6f, 0.6f, 0.6f));
-	earth->setTransform(glm::vec3(14.0f, 0.0f, 2.0f));
+	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
+	// earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
   //
   
   saturn->loadObjToBuffer("resource/saturn/planet.obj");
   saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
+  saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
   saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
-  saturn->setTransform(glm::vec3(-9.0f, 12.0f, -6.0f));
+  saturn->setTransform(glm::vec3(-9.0f, 7.0f, 0.0f));
 
   // Load sun
 	sun->loadObjToBuffer("resource/sun/planet.obj");
@@ -411,7 +413,7 @@ void objDataToOpenGL() {
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
 	rock->loadTextureToBuffer("resource/rock/rock.bmp", programID);
-	createRandomModel(glm::vec3(-9.0f, 12.0f, -6.0f));
+	createRandomModel(glm::vec3(-9.0f, 7.0f, 0.0f));
 
 
 	background->loadVerticesToBuffer(100.0f);
@@ -443,10 +445,11 @@ void initOpenGL() {
 
 // Keep looping to draw on screen
 void drawScreen() {
+  orbitalTheta += 0.01f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	lightPosition = sun->getGlobalOrigin();
+  lightPosition = sun->getGlobalOrigin();
 
 	// Standard step to draw one object
 	// eyeViewMatrix(programID);
@@ -463,12 +466,15 @@ void drawScreen() {
 		rock->renderObject();
 	}
 
+  glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
-	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
+  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
+  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), 0.0f, 10.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
   
+  glUseProgram(programID);
   eyeViewMatrix(programID);
 	lightControl(programID);
 	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.1);

@@ -21,8 +21,9 @@ extern CameraPosition cameraPosition;
 void keyboardClick(unsigned char key, int x, int y){
   if (key == ' ')
 	passiveMouseMode = !passiveMouseMode;
-
-  if (key == 'q')
+  else if (key == 'a'){
+  }
+  else if (key == 'q')
     exit(0);
 }
 

@@ -29,20 +29,20 @@ void main()
   vec4 new_position = PVM * RotationMatrix * TransformMatrix * ScalingMatrix * v;
 	gl_Position = new_position;
 
+  vec4 positionRTS = RotationMatrix * TransformMatrix * ScalingMatrix * v;
+
   UV = vertexUV;
 
-  mat4 modelMat = RotationMatrix * TransformMatrix * ScalingMatrix;
-
   // Calculation for lighting
-  worldPos = (modelMat * v).xyz;
+  worldPos = (modelMatrix * positionRTS).xyz;
 
-  vec3 cameraPos = (viewMatrix * modelMat * v).xyz;
+  vec3 cameraPos = (viewMatrix * modelMatrix * positionRTS).xyz;
   cameraEye = vec3(0.0f, 0.0f, 0.0f) - cameraPos;
 
   vec3 cameraLight = (viewMatrix * vec4(lightPosition, 1.0f)).xyz;
   lightDirection = cameraLight + cameraEye;
 
-  cameraNormal = (viewMatrix * modelMat * vec4(normal, 0.0f)).xyz;
+  cameraNormal = (viewMatrix * modelMatrix * RotationMatrix * TransformMatrix * ScalingMatrix * vec4(normal, 0.0f)).xyz;
 
   // Plane rendering for bump mapping
   // if(planeRender == 1.0f){
