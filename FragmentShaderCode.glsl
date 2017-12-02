@@ -28,6 +28,7 @@ void main(){
   specularLight = vec3(specularCoefficient, specularCoefficient, specularCoefficient);
 
   float lightDistance = length(lightPosition - worldPos);
+  float distanceParams = lightDistance * lightDistance;
 
   // For bump mapping
   // if(planeRender == 1.0f){
@@ -58,6 +59,6 @@ void main(){
   vec3 R = reflect(-L, N);
   float cosAlpha = clamp(dot(V, R), 0, 1);
 
-  color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / (lightDistance * lightDistance)
-          + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / (lightDistance * lightDistance);
+  color += ambientLight + diffuseLight * lightColor * diffuseCoefficient * cosTheta / distanceParams
+          + specularLight * lightColor * 50.0f * pow(cosAlpha, 100) / distanceParams;
 }
