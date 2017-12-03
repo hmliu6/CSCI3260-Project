@@ -1,9 +1,9 @@
 #ifdef __APPLE__
-  #include <GL/glew.h>
-  #include <GLUT/glut.h>
+#include <GL/glew.h>
+#include <GLUT/glut.h>
 #elif defined _WIN32 || defined _WIN64
-  #include "Library/Dependencies/glew/glew.h"
-  #include "Library/Dependencies/freeglut/freeglut.h"
+#include "Library/Dependencies/glew/glew.h"
+#include "Library/Dependencies/freeglut/freeglut.h"
 #endif
 #include <stdlib.h>
 #include <math.h>
@@ -45,341 +45,338 @@ float earth_innRot_Degree = 0.0f;
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
 
 class Object {
-  public:
-    // Class constructor
-    Object() {
-      glGenBuffers(1, &VAObuffer);
-      glGenBuffers(1, &vertexVBO);
-      glGenBuffers(1, &uvVBO);
-      glGenBuffers(1, &normalVBO);
-      modelMatrix = glm::mat4(1.0f);
-      modelScalingMatrix = glm::mat4(1.0f);
-      modelTransformMatrix = glm::mat4(1.0f);
-      modelRotationMatrix = glm::mat4(1.0f);
-      tempScalingMatrix = glm::mat4(1.0f);
-      tempTransformMatrix = glm::mat4(1.0f);
-      normalMapFlag = 0;
-      secondTextureFlag = 0;
-    }
+public:
+	// Class constructor
+	Object() {
+		glGenBuffers(1, &VAObuffer);
+		glGenBuffers(1, &vertexVBO);
+		glGenBuffers(1, &uvVBO);
+		glGenBuffers(1, &normalVBO);
+		modelMatrix = glm::mat4(1.0f);
+		modelScalingMatrix = glm::mat4(1.0f);
+		modelTransformMatrix = glm::mat4(1.0f);
+		modelRotationMatrix = glm::mat4(1.0f);
+		tempScalingMatrix = glm::mat4(1.0f);
+		tempTransformMatrix = glm::mat4(1.0f);
+		normalMapFlag = 0;
+		secondTextureFlag = 0;
+	}
 
-    // Pass all object data to buffer
-    void loadObjToBuffer(char * objectPath) {
-      bool res = loadOBJ(objectPath, vertices, uvs, normals);
+	// Pass all object data to buffer
+	void loadObjToBuffer(char * objectPath) {
+		bool res = loadOBJ(objectPath, vertices, uvs, normals);
 
-      glGenVertexArrays(1, &VAObuffer);
-      glBindVertexArray(VAObuffer);
+		glGenVertexArrays(1, &VAObuffer);
+		glBindVertexArray(VAObuffer);
 
-      // Bind Vertices Data to Buffer
-      glGenBuffers(1, &vertexVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		// Bind Vertices Data to Buffer
+		glGenBuffers(1, &vertexVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-      // Bind UV Data to Buffer
-      glGenBuffers(1, &uvVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, uvVBO);
-      glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray(1);
-      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		// Bind UV Data to Buffer
+		glGenBuffers(1, &uvVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, uvVBO);
+		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-      // Bind Normal Data to Buffer
-      glGenBuffers(1, &normalVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-      glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec2), &normals[0], GL_STATIC_DRAW);
-      glEnableVertexAttribArray(2);
-      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+		// Bind Normal Data to Buffer
+		glGenBuffers(1, &normalVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec2), &normals[0], GL_STATIC_DRAW);
+		glEnableVertexAttribArray(2);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-      drawSize = vertices.size();
-    }
+		drawSize = vertices.size();
+	}
 
-    // Pass all texture data to buffer
-    void loadTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-      objectTexture = loadBMPtoTexture(texturePath);
-      TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler_1");
-      printf("Texture1 ID: %i \n",TextureID);
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, objectTexture);
-      glUniform1i(TextureID, 0);
-    }
+	// Pass all texture data to buffer
+	void loadTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+		objectTexture = loadBMPtoTexture(texturePath);
+		TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler_1");
+		printf("Texture1 ID: %i \n", TextureID);
+	}
 
 
-    // Pass normal texture map to buffer
-    void loadNormalTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-      objectNormalTexture = loadBMP_custom(texturePath);
-      NormalTextureID = glGetUniformLocation(shaderProgramID, "normalMap");
-      printf("NormalTexture ID: %i \n",NormalTextureID);
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
-      glUniform1i(NormalTextureID, 1);
-      normalMapFlag = 1;
-    }
+	// Pass normal texture map to buffer
+	void loadNormalTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+		objectNormalTexture = loadBMP_custom(texturePath);
+		NormalTextureID = glGetUniformLocation(shaderProgramID, "normalMap");
+		printf("NormalTexture ID: %i \n", NormalTextureID);
+		normalMapFlag = 1;
+	}
 
-    // Pass all texture data to buffer
-    void loadSecondTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-      objectTexture2 = loadBMPtoTexture(texturePath);
-      TextureID2 = glGetUniformLocation(shaderProgramID, "myTextureSampler_2");
-      printf("Texture2 ID: %i \n",TextureID2);
-      glActiveTexture(GL_TEXTURE2);
-      glBindTexture(GL_TEXTURE_2D, objectTexture2);
-      glUniform1i(TextureID2, 2);
-      secondTextureFlag = 1;
-    }
+	// Pass all texture data to buffer
+	void loadSecondTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+		objectTexture2 = loadBMPtoTexture(texturePath);
+		TextureID2 = glGetUniformLocation(shaderProgramID, "myTextureSampler_2");
+		printf("Texture2 ID: %i \n", TextureID2);
+		secondTextureFlag = 1;
+	}
 
 
-    glm::vec3 getGlobalOrigin() {
-      glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
-      glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
-      globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
-      return globalOrigin;
-    }
+	glm::vec3 getGlobalOrigin() {
+		glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
+		glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
+		globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
+		return globalOrigin;
+	}
 
-    // Model Matrix
-    void setModelMatrix(glm::mat4 _modelMatrix) {
-      modelMatrix = _modelMatrix;
-    }
+	// Model Matrix
+	void setModelMatrix(glm::mat4 _modelMatrix) {
+		modelMatrix = _modelMatrix;
+	}
 
-    // Scaling
-    void setScale(glm::vec3 scale) {
-      tempScalingMatrix = glm::scale(glm::mat4(), scale);
-      modelScalingMatrix = tempScalingMatrix;
-    }
+	// Scaling
+	void setScale(glm::vec3 scale) {
+		tempScalingMatrix = glm::scale(glm::mat4(), scale);
+		modelScalingMatrix = tempScalingMatrix;
+	}
 
-    void setOrigin(glm::vec3 origin) {
-      modelScalingMatrix = glm::translate(modelMatrix, origin) * tempScalingMatrix;
-    }
+	void setOrigin(glm::vec3 origin) {
+		modelScalingMatrix = glm::translate(modelMatrix, origin) * tempScalingMatrix;
+	}
 
-    // Rotation with self object space
-    void setSelfRotate(glm::vec3 axis, float thetaDegree) {
-      glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
-    }
+	// Rotation with self object space
+	void setSelfRotate(glm::vec3 axis, float thetaDegree) {
+		glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+		modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+	}
 
-    // Transformation
-    void setTransform(glm::vec3 transform) {
-      modelTransformMatrix = glm::translate(modelMatrix, transform);
-    }
+	// Transformation
+	void setTransform(glm::vec3 transform) {
+		modelTransformMatrix = glm::translate(modelMatrix, transform);
+	}
 
-    // Rotation
-    void setRotate(glm::vec3 axis, float thetaDegree) {
-      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-    }
+	// Rotation
+	void setRotate(glm::vec3 axis, float thetaDegree) {
+		modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+	}
 
-    // Passing all matrices to Shader
-    void sendMatrix(GLint shaderProgramID) {
-      GLint ScalingMatrixID = glGetUniformLocation(shaderProgramID, "ScalingMatrix");
-      GLint TransformMatrixID = glGetUniformLocation(shaderProgramID, "TransformMatrix");
-      GLint RotateMatrixID = glGetUniformLocation(shaderProgramID, "RotationMatrix");
+	// Passing all matrices to Shader
+	void sendMatrix(GLint shaderProgramID) {
+		GLint ScalingMatrixID = glGetUniformLocation(shaderProgramID, "ScalingMatrix");
+		GLint TransformMatrixID = glGetUniformLocation(shaderProgramID, "TransformMatrix");
+		GLint RotateMatrixID = glGetUniformLocation(shaderProgramID, "RotationMatrix");
 
-      glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
-      glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
-      glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
+		glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
+		glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
+		glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
 
-      GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
-            GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
-      glUniform1i(secondTextureFlagID, secondTextureFlag);
-      glUniform1i(normalMapFlagID, normalMapFlag);
-    }
+		GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
+		GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
+		glUniform1i(secondTextureFlagID, secondTextureFlag);
+		glUniform1i(normalMapFlagID, normalMapFlag);
+	}
 
-    // Bind object buffer and draw on screen
-    void renderObject() {
-      glBindVertexArray(VAObuffer);
-      glBindTexture(GL_TEXTURE_2D, objectTexture);
-      if(normalMapFlag==1){
-        glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
-      }
-      if(secondTextureFlag==1){
-        glBindTexture(GL_TEXTURE_2D, objectTexture2);
-      }
-      glDrawArrays(GL_TRIANGLES, 0, drawSize);
-    }
+	// Bind object buffer and draw on screen
+	void renderObject() {
+		glBindVertexArray(VAObuffer);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, objectTexture);
+		glUniform1i(TextureID, 0);
+		if (normalMapFlag == 1) {
+			glActiveTexture(GL_TEXTURE1);
+			glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
+			glUniform1i(NormalTextureID, 1);
+		}
+		if (secondTextureFlag == 1) {
+			glActiveTexture(GL_TEXTURE2);
+			glBindTexture(GL_TEXTURE_2D, objectTexture2);
+			glUniform1i(TextureID2, 2);
+		}
+		glDrawArrays(GL_TRIANGLES, 0, drawSize);
+	}
 
-  protected:
-    // Put all variables declaration here
-    GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
-    GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
-    GLushort normalMapFlag, secondTextureFlag;
+protected:
+	// Put all variables declaration here
+	GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
+	GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
+	GLushort normalMapFlag, secondTextureFlag;
 
-    GLsizei drawSize;
+	GLsizei drawSize;
 
-    std::vector <glm::vec3> vertices, normals;
-    std::vector <glm::vec2> uvs;
+	std::vector <glm::vec3> vertices, normals;
+	std::vector <glm::vec2> uvs;
 
-    glm::mat4 modelMatrix;
-    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
+	glm::mat4 modelMatrix;
+	glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
 };
 
 class Skybox : public Object {
-  public:
-    // Class constructor
-    Skybox() {
-      glGenBuffers(1, &VAObuffer);
-      glGenBuffers(1, &vertexVBO);
-      glGenTextures(1, &skyboxTexture);
-      modelScalingMatrix = glm::mat4(1.0f);
-      modelTransformMatrix = glm::mat4(1.0f);
-      modelRotationMatrix = glm::mat4(1.0f);
-    }
+public:
+	// Class constructor
+	Skybox() {
+		glGenBuffers(1, &VAObuffer);
+		glGenBuffers(1, &vertexVBO);
+		glGenTextures(1, &skyboxTexture);
+		modelScalingMatrix = glm::mat4(1.0f);
+		modelTransformMatrix = glm::mat4(1.0f);
+		modelRotationMatrix = glm::mat4(1.0f);
+	}
 
-    void loadVerticesToBuffer(float size) {
-      GLfloat points[] = {
-        // positions
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
+	void loadVerticesToBuffer(float size) {
+		GLfloat points[] = {
+			// positions
+			-1.0f,  1.0f, -1.0f,
+			-1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
+			1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
 
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
 
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
 
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			1.0f, -1.0f,  1.0f,
+			-1.0f, -1.0f,  1.0f,
 
-        -1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
+			-1.0f,  1.0f, -1.0f,
+			1.0f,  1.0f, -1.0f,
+			1.0f,  1.0f,  1.0f,
+			1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f,  1.0f,
+			-1.0f,  1.0f, -1.0f,
 
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f };
+			-1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			1.0f, -1.0f, -1.0f,
+			1.0f, -1.0f, -1.0f,
+			-1.0f, -1.0f,  1.0f,
+			1.0f, -1.0f,  1.0f };
 
-      for (int i = 0; i < sizeof(points) / sizeof(float); i++)
-        points[i] *= size;
+		for (int i = 0; i < sizeof(points) / sizeof(float); i++)
+			points[i] *= size;
 
-      glGenVertexArrays(1, &VAObuffer);
-      glBindVertexArray(VAObuffer);
+		glGenVertexArrays(1, &VAObuffer);
+		glBindVertexArray(VAObuffer);
 
-      // Bind Vertices Data to Buffer
-      glGenBuffers(1, &vertexVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+		// Bind Vertices Data to Buffer
+		glGenBuffers(1, &vertexVBO);
+		glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-    }
+	}
 
-    void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
-      vector<const GLchar*> skyfaces;
-      skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
-      skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
-      skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
+	void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
+		vector<const GLchar*> skyfaces;
+		skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
+		skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
+		skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
 
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-      int width, height;
-      unsigned char *image;
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+		int width, height;
+		unsigned char *image;
 
-      for (GLuint i = 0; i < skyfaces.size(); i++) {
-        loadBMP_Data(skyfaces[i], image, width, height);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-      }
+		for (GLuint i = 0; i < skyfaces.size(); i++) {
+			loadBMP_Data(skyfaces[i], image, width, height);
+			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+		}
 
-      // format cube map texture
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
+		// format cube map texture
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	}
 
-    void renderSkybox() {
-      glm::mat4 tempView = View;
+	void renderSkybox() {
+		glm::mat4 tempView = View;
 
-      glUseProgram(skyboxProgramID);
-      glDepthMask(GL_FALSE);
-      glDisable(GL_CULL_FACE);
+		glUseProgram(skyboxProgramID);
+		glDepthMask(GL_FALSE);
+		glDisable(GL_CULL_FACE);
 
-      View = glm::mat4(glm::mat3(View));
+		View = glm::mat4(glm::mat3(View));
 
-      sendMatrix(skyboxProgramID);
-      glBindVertexArray(VAObuffer);
+		sendMatrix(skyboxProgramID);
+		glBindVertexArray(VAObuffer);
 
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
-      glDrawArrays(GL_TRIANGLES, 0, 36);
+		glDrawArrays(GL_TRIANGLES, 0, 36);
 
-      glEnable(GL_CULL_FACE);
-      glDepthMask(GL_TRUE);
-      glUseProgram(programID);
+		glEnable(GL_CULL_FACE);
+		glDepthMask(GL_TRUE);
+		glUseProgram(programID);
 
-      View = tempView;
-    }
+		View = tempView;
+	}
 
-  private:
-    GLuint skyboxTexture;
-    GLuint VAObuffer, vertexVBO;
-    GLsizei drawSize;
-    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
+private:
+	GLuint skyboxTexture;
+	GLuint VAObuffer, vertexVBO;
+	GLsizei drawSize;
+	glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
 };
 
 class Earth : public Object {
-  public:
-    Earth() : Object(){}
+public:
+	Earth() : Object() {}
 
-    glm::vec3 getEarthCentre(){
-      glm::vec4 origin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-      glm::vec4 movedOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * origin;
-      return glm::vec3(movedOrigin);
-    }
+	glm::vec3 getEarthCentre() {
+		glm::vec4 origin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		glm::vec4 movedOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * origin;
+		return glm::vec3(movedOrigin);
+	}
 };
 
 class Airplane : public Object {
-  public:
-    Airplane() : Object(){}
+public:
+	Airplane() : Object() {}
 
-    // Scaling
-    void setScale(glm::vec3 scale) {
-      modelScalingMatrix = glm::scale(glm::mat4(), scale);
-    }
+	// Scaling
+	void setScale(glm::vec3 scale) {
+		modelScalingMatrix = glm::scale(glm::mat4(), scale);
+	}
 
-    void setOrigin(glm::vec3 inputOrigin) {
-      // modelScalingMatrix = glm::translate(modelMatrix, inputOrigin) * tempScalingMatrix;
-      origin = inputOrigin;
-    }
+	void setOrigin(glm::vec3 inputOrigin) {
+		// modelScalingMatrix = glm::translate(modelMatrix, inputOrigin) * tempScalingMatrix;
+		origin = inputOrigin;
+	}
 
-    // Rotation with self object space
-    void setSelfRotate(glm::vec3 axis, float thetaDegree) {
-      glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
-    }
+	// Rotation with self object space
+	void setSelfRotate(glm::vec3 axis, float thetaDegree) {
+		glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+		modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+	}
 
-    // Transformation
-    void setTransform(glm::vec3 transform) {
-      modelTransformMatrix = glm::translate(modelMatrix, transform) * glm::translate(modelMatrix, origin);
-    }
+	// Transformation
+	void setTransform(glm::vec3 transform) {
+		modelTransformMatrix = glm::translate(modelMatrix, transform) * glm::translate(modelMatrix, origin);
+	}
 
-    // Rotation
-    void setRotate(glm::vec3 axis, float thetaDegree) {
-      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-    }
+	// Rotation
+	void setRotate(glm::vec3 axis, float thetaDegree) {
+		modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+	}
 
-  private:
-    glm::vec3 origin;
+private:
+	glm::vec3 origin;
 };
 
 // Initialize class object pointer globally
@@ -403,7 +400,7 @@ void createRandomModel(glm::vec3 modelOrigin) {
 	GLfloat offset = 0.4f;
 	GLfloat displacement;
 
-	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++){
+	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++) {
 		glm::mat4 model;
 		// 1. Translation: displace along circle with 'radius' in range [-offset, offset]
 		GLfloat angle = (GLfloat)i / (GLfloat)NUMBER_OF_ROCK * 360.0f;
@@ -472,7 +469,7 @@ void objDataToOpenGL() {
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
-  earth->loadSecondTextureToBuffer("resource/sun/sun.bmp", programID);
+	earth->loadSecondTextureToBuffer("resource/sun/sun.bmp", programID);
 	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 	// earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
 
@@ -484,23 +481,23 @@ void objDataToOpenGL() {
 	// moon->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
 
   // Load saturn
-  saturn->loadObjToBuffer("resource/saturn/planet.obj");
-  saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
-  saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
-  saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
-  saturn->setTransform(glm::vec3(-9.0f, 7.0f, 0.0f));
+	saturn->loadObjToBuffer("resource/saturn/planet.obj");
+	saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
+	saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
+	saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
+	saturn->setTransform(glm::vec3(-9.0f, 7.0f, 0.0f));
 
-  // Load sun
+	// Load sun
 	sun->loadObjToBuffer("resource/sun/planet.obj");
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
 	sun->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
-  sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+	sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
 
-  // Load airplane
-  airplane->loadObjToBuffer("resource/airplane/airplane.obj");
-  airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
-  airplane->loadNormalTextureToBuffer("resource/airplane/airplane_normal.bmp", programID);
-  airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
+	// Load airplane
+	airplane->loadObjToBuffer("resource/airplane/airplane.obj");
+	airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
+	airplane->loadNormalTextureToBuffer("resource/airplane/airplane_normal.bmp", programID);
+	airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
 
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
@@ -515,7 +512,7 @@ void objDataToOpenGL() {
 		"resource/skybox/orbital-element_dn.bmp",
 		"resource/skybox/orbital-element_lf.bmp",
 		"resource/skybox/orbital-element_rt.bmp");
-  background->setSelfRotate(glm::vec3(1, 0, 0), 277.0f);
+	background->setSelfRotate(glm::vec3(1, 0, 0), 277.0f);
 }
 
 // Initialize OpenGL
@@ -537,14 +534,14 @@ void initOpenGL() {
 
 // Keep looping to draw on screen
 void drawScreen() {
-  orbitalTheta += 0.01f;
-  moonTheta += 0.05f;
-  saturnAlpha += 0.044f;
-  airplaneTheta += 0.03f;
+	orbitalTheta += 0.01f;
+	moonTheta += 0.05f;
+	saturnAlpha += 0.044f;
+	airplaneTheta += 0.03f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-  lightPosition = sun->getGlobalOrigin();
+	lightPosition = sun->getGlobalOrigin();
 
 	// Standard step to draw one object
 	// eyeViewMatrix(programID);
@@ -552,8 +549,8 @@ void drawScreen() {
 	// jeep->renderObject();
   //
 
-  glUseProgram(programID);
-	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++){
+	glUseProgram(programID);
+	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++) {
 		eyeViewMatrix(programID);
 		rock->setModelMatrix(rockMatrices[i]);
 		rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
@@ -561,52 +558,52 @@ void drawScreen() {
 		rock->renderObject();
 	}
 
-  glUseProgram(programID);
+	glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
-  earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
-  earth->setTransform(glm::vec3(20.0f * cos(orbitalTheta), -1.5f, 16.0f * sin(orbitalTheta)));
+	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
+	earth->setTransform(glm::vec3(20.0f * cos(orbitalTheta), -1.5f, 16.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
-  earth->renderObject();
-  glm::vec3 earthOrigin = earth->getEarthCentre();
-  // cout << "{" << earthOrigin.x << ", "  << earthOrigin.z << "}  " << orbitalTheta << endl;
+	earth->renderObject();
+	glm::vec3 earthOrigin = earth->getEarthCentre();
+	// cout << "{" << earthOrigin.x << ", "  << earthOrigin.z << "}  " << orbitalTheta << endl;
 
-  glUseProgram(programID);
+	glUseProgram(programID);
 	eyeViewMatrix(programID);
-  lightControl(programID);
-  moon->setOrigin(earthOrigin);
-  moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
-  moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
-	moon->sendMatrix(programID);
-  moon->renderObject();
-
-  glUseProgram(programID);
-	eyeViewMatrix(programID);
-  lightControl(programID);
-  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.25f);
-  airplane->setOrigin(earthOrigin);
-  // airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
-  airplane->setTransform(glm::vec3(0.0f, -9.0f * cos(airplaneTheta), -9.0f * sin(airplaneTheta)));
-	airplane->sendMatrix(programID);
-  airplane->renderObject();
-
-  glUseProgram(programID);
-  eyeViewMatrix(programID);
 	lightControl(programID);
-  saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
-  // saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
-	saturn->sendMatrix(programID);
-  saturn->renderObject();
+	moon->setOrigin(earthOrigin);
+	moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
+	moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
+	moon->sendMatrix(programID);
+	moon->renderObject();
 
-  glUseProgram(lightSourceProgramID);
+	glUseProgram(programID);
+	eyeViewMatrix(programID);
+	lightControl(programID);
+	airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.25f);
+	airplane->setOrigin(earthOrigin);
+	// airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+	airplane->setTransform(glm::vec3(0.0f, -9.0f * cos(airplaneTheta), -9.0f * sin(airplaneTheta)));
+	airplane->sendMatrix(programID);
+	airplane->renderObject();
+
+	glUseProgram(programID);
+	eyeViewMatrix(programID);
+	lightControl(programID);
+	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
+	// saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
+	saturn->sendMatrix(programID);
+	saturn->renderObject();
+
+	glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
-  lightControl(lightSourceProgramID);
-  sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
+	lightControl(lightSourceProgramID);
+	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
-  // Order of sending matrices must NOT be changed
-  glUseProgram(skyboxProgramID);
+	// Order of sending matrices must NOT be changed
+	glUseProgram(skyboxProgramID);
 	eyeViewMatrix(skyboxProgramID);
 	background->renderSkybox();
 
@@ -624,24 +621,24 @@ void timerFunction(int id) {
 
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
-  glutInitDisplayMode(GLUT_RGBA);
-  // For Mac OS
-  glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_RGBA);
+	// For Mac OS
+	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
-  // For Windows
-	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	// For Windows
+	   //glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
-  glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
 	glewInit();
 
 	// Create object and point to global variables
 	jeep = new Object;
-  airplane = new Airplane;
+	airplane = new Airplane;
 	earth = new Earth;
-  sun = new Object;
-  saturn = new Object;
-  moon = new Object;
+	sun = new Object;
+	saturn = new Object;
+	moon = new Object;
 	rock = new Object;
 	background = new Skybox;
 

@@ -28,7 +28,7 @@ void main(){
 
   diffuseLight = texture( myTextureSampler_1, UV ).rgb;
   if(secondTextureFlag){
-    diffuseLight = 0.5 * texture( myTextureSampler_1, UV ).rgb + 0.5 * texture( myTextureSampler_2, UV ).rgb;
+    diffuseLight = 0.7 * texture( myTextureSampler_1, UV ).rgb + 0.3 * texture( myTextureSampler_2, UV ).rgb;
   }
 
   ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
@@ -57,7 +57,7 @@ void main(){
 
   if(normalMapFlag){
     N = texture(normalMap, UV).rgb;
-    N = normalize(N * 2.0f);
+    N = normalize(N * 2.0f - 1.0f);
   }
 
   float cosTheta = clamp(dot(N, L), 0, 1);
