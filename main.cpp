@@ -28,7 +28,7 @@ using namespace std;
 
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
-float specularCoefficient = 0.5f, diffuseCoefficient = 170.0f;
+float specularCoefficient = 0.5f, diffuseCoefficient = 185.0f;
 float cameraPosAngle = 71.0f;
 float orbitalTheta = 0.0f, saturnAlpha = 0.0f;
 // Parameter for choosing Shader part
@@ -315,9 +315,11 @@ class Skybox : public Object {
 // Initialize class object pointer globally
 // C++ restricted to global class object declaration
 Object *jeep = nullptr;
+Object *airplane = nullptr;
 Object *earth = nullptr;
 Object *sun = nullptr;
 Object *saturn = nullptr;
+Object *moon = nullptr;
 Object *rock = nullptr;
 glm::mat4* rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 Skybox *background = nullptr;
@@ -402,8 +404,15 @@ void objDataToOpenGL() {
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
 	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 	// earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
-  //
   
+  // Load moon
+	moon->loadObjToBuffer("resource/moon/planet.obj");
+	moon->loadTextureToBuffer("resource/moon/moon.bmp", programID);
+	moon->loadNormalTextureToBuffer("resource/moon/moon_normal.bmp", programID);
+	moon->setScale(glm::vec3(0.4f, 0.4f, 0.4f));
+	// moon->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
+
+  // Load saturn
   saturn->loadObjToBuffer("resource/saturn/planet.obj");
   saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
   saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
@@ -477,9 +486,17 @@ void drawScreen() {
 	eyeViewMatrix(programID);
 	lightControl(programID);
   earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
-  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), 0.0f, 10.0f * sin(orbitalTheta)));
+  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), -1.5f, 10.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
+
+  glUseProgram(programID);
+	eyeViewMatrix(programID);
+	lightControl(programID);
+  moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4);
+  moon->setTransform(glm::vec3(22.0f * cos(orbitalTheta), 0.0f, 15.0f * sin(orbitalTheta)));
+	moon->sendMatrix(programID);
+  moon->renderObject();
   
   glUseProgram(programID);
   eyeViewMatrix(programID);
@@ -528,9 +545,11 @@ int main(int argc, char *argv[]) {
 
 	// Create object and point to global variables
 	jeep = new Object;
+  airplane = new Object;
 	earth = new Object;
   sun = new Object;
   saturn = new Object;
+  moon = new Object;
 	rock = new Object;
 	background = new Skybox;
 

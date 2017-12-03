@@ -17,7 +17,7 @@ uniform float specularCoefficient;
 uniform float diffuseCoefficient;
 
 vec3 diffuseLight, ambientLight, specularLight;
-float ambientCoefficient = 0.4f;
+float ambientCoefficient = 0.5f;
 
 void main(){
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
