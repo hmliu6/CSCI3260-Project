@@ -4,7 +4,7 @@
 
 * [x] 3 Planets A, B, C
 * [x] Light source box E
-* [ ] Space Vehicle D
+* [x] Space Vehicle D
 
 Keep the above objects in ratio wthen changing window size with `glutReshapeFunc`
 
@@ -12,14 +12,14 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [x] Asteroid ring cloud with at least 200 random floating rocks around C
 * [x] Single texture mapping and normal mapping for A
 * [x] Single texture mapping for planet B
-* [ ] Single texture mapping for space vehicle D
+* [x] Single texture mapping for space vehicle D
 * [x] Single texture mapping for rock G
 * [ ] Multiple texture mapping for planet C
 * [x] Basic light rendering
 * [x] Self-rotation for planet A, B and C
-* [ ] Planet B move around planet A
+* [x] Planet B move around planet A
 * [x] Move around centre for light source E
-* [ ] Move around A for space vehicle D
+* [x] Move around A for space vehicle D
 * [x] Move around planet B for all rocks G
 * [ ] 3 distinct viewpoints for choices, i.e. -X, +X, +Y axis
 * [ ] Fog effect
