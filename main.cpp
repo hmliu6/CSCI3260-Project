@@ -30,7 +30,7 @@ using namespace std;
 GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.5f, diffuseCoefficient = 170.0f;
 float cameraPosAngle = 71.0f;
-float orbitalTheta = 0.0f;
+float orbitalTheta = 0.0f, saturnAlpha = 0.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
@@ -55,6 +55,7 @@ class Object {
       modelTransformMatrix = glm::mat4(1.0f);
       modelRotationMatrix = glm::mat4(1.0f);
       tempScalingMatrix = glm::mat4(1.0f);
+      tempTransformMatrix = glm::mat4(1.0f);
       normalMapFlag = 0;
     }
 
@@ -128,7 +129,12 @@ class Object {
 
     // Transformation
     void setTransform(glm::vec3 transform) {
-      modelTransformMatrix = glm::translate(modelMatrix, transform);
+      tempTransformMatrix = glm::translate(modelMatrix, transform);
+      modelTransformMatrix = tempTransformMatrix;
+    }
+
+    void addTransform(glm::vec3 transform) {
+      modelTransformMatrix = tempTransformMatrix + glm::translate(glm::mat4(1.0f), transform);
     }
 
     // Rotation
@@ -175,7 +181,7 @@ class Object {
     std::vector <glm::vec2> uvs;
 
     glm::mat4 modelMatrix;
-    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix;
+    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
 };
 
 class Skybox : public Object {
@@ -446,6 +452,7 @@ void initOpenGL() {
 // Keep looping to draw on screen
 void drawScreen() {
   orbitalTheta += 0.01f;
+  saturnAlpha += 0.044f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -477,13 +484,15 @@ void drawScreen() {
   glUseProgram(programID);
   eyeViewMatrix(programID);
 	lightControl(programID);
-	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.1);
+  saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
+  // saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
 	saturn->sendMatrix(programID);
   saturn->renderObject();
 
   glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
-	lightControl(lightSourceProgramID);
+  lightControl(lightSourceProgramID);
+  sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
