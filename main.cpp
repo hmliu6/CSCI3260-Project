@@ -57,6 +57,7 @@ class Object {
       tempScalingMatrix = glm::mat4(1.0f);
       tempTransformMatrix = glm::mat4(1.0f);
       normalMapFlag = 0;
+      secondTextureFlag = 0;
     }
 
     // Pass all object data to buffer
@@ -93,21 +94,36 @@ class Object {
     // Pass all texture data to buffer
     void loadTextureToBuffer(char * texturePath, GLint shaderProgramID) {
       objectTexture = loadBMPtoTexture(texturePath);
-      TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler");
+      TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler_1");
+      printf("Texture1 ID: %i \n",TextureID);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, objectTexture);
-      glUniform1i(TextureID, 0);
+      // glUniform1i(TextureID, 0);
     }
+
 
     // Pass normal texture map to buffer
     void loadNormalTextureToBuffer(char * texturePath, GLint shaderProgramID) {
       objectNormalTexture = loadBMP_custom(texturePath);
       NormalTextureID = glGetUniformLocation(shaderProgramID, "normalMap");
-      glActiveTexture(GL_TEXTURE0);
+      printf("NormalTexture ID: %i \n",NormalTextureID);
+      glActiveTexture(GL_TEXTURE1);
       glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
       glUniform1i(NormalTextureID, 1);
       normalMapFlag = 1;
     }
+
+    // Pass all texture data to buffer
+    void loadSecondTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+      objectTexture2 = loadBMPtoTexture(texturePath);
+      TextureID2 = glGetUniformLocation(shaderProgramID, "myTextureSampler_2");
+      printf("Texture2 ID: %i \n",TextureID2);
+      glActiveTexture(GL_TEXTURE2);
+      glBindTexture(GL_TEXTURE_2D, objectTexture2);
+      glUniform1i(TextureID2, 2);
+      secondTextureFlag = 1;
+    }
+
 
     glm::vec3 getGlobalOrigin() {
       glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
@@ -157,7 +173,9 @@ class Object {
       glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
       glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
 
+      GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
       GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
+      glUniform1i(secondTextureFlagID, secondTextureFlag);
       glUniform1i(normalMapFlagID, normalMapFlag);
     }
 
@@ -171,8 +189,8 @@ class Object {
   protected:
     // Put all variables declaration here
     GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
-    GLuint objectTexture, TextureID, objectNormalTexture, NormalTextureID;
-    GLushort normalMapFlag;
+    GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
+    GLushort normalMapFlag, secondTextureFlag;
 
     GLsizei drawSize;
 
@@ -338,7 +356,7 @@ Skybox *background = nullptr;
 // ring cloud location creation
 void createRandomModel(glm::vec3 modelOrigin) {
 	rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
-	srand(glutGet(GLUT_ELAPSED_TIME)); // initialize random seed	
+	srand(glutGet(GLUT_ELAPSED_TIME)); // initialize random seed
 	GLfloat radius = 6.0f;
 	GLfloat offset = 0.4f;
 	GLfloat displacement;
@@ -402,19 +420,20 @@ void lightControl(GLint shaderProgramID) {
 // Load objects to buffer
 void objDataToOpenGL() {
 	// Standard steps to pass one object and its texture
-	jeep->loadObjToBuffer("resource/jeep/jeep.obj");
-	jeep->loadTextureToBuffer("resource/jeep/jeep_texture.bmp", programID);
-	jeep->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
-	jeep->setTransform(glm::vec3(2.0f, 0.3f, -5.0f));
+	// jeep->loadObjToBuffer("resource/jeep/jeep.obj");
+	// jeep->loadTextureToBuffer("resource/jeep/jeep_texture.bmp", programID);
+	// jeep->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
+	// jeep->setTransform(glm::vec3(2.0f, 0.3f, -5.0f));
 	//
 
 	// Load earth
 	earth->loadObjToBuffer("resource/earth/planet.obj");
 	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
+  earth->loadSecondTextureToBuffer("resource/sun/sun.bmp", programID);
 	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 	// earth->setTransform(glm::vec3(16.0f, 0.0f, 0.0f));
-  
+
   // Load moon
 	moon->loadObjToBuffer("resource/moon/planet.obj");
 	moon->loadTextureToBuffer("resource/moon/moon.bmp", programID);
@@ -434,7 +453,7 @@ void objDataToOpenGL() {
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
 	sun->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
   sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
-  
+
   // Load airplane
   airplane->loadObjToBuffer("resource/airplane/airplane.obj");
   airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
@@ -526,7 +545,7 @@ void drawScreen() {
   airplane->setTransform(glm::vec3(0.0f, 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
 	airplane->sendMatrix(programID);
   airplane->renderObject();
-  
+
   glUseProgram(programID);
   eyeViewMatrix(programID);
 	lightControl(programID);
@@ -564,10 +583,10 @@ int main(int argc, char *argv[]) {
   glutInitDisplayMode(GLUT_RGBA);
   // For Mac OS
   glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  
+
   // For Windows
 	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-  
+
   glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
 	glewInit();
