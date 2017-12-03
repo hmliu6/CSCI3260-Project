@@ -312,11 +312,22 @@ class Skybox : public Object {
     glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
 };
 
+class Earth : public Object {
+  public:
+    Earth() : Object(){}
+
+    glm::vec3 getEarthCentre(){
+      glm::vec4 origin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+      glm::vec4 movedOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * origin;
+      return glm::vec3(movedOrigin);
+    }
+};
+
 // Initialize class object pointer globally
 // C++ restricted to global class object declaration
 Object *jeep = nullptr;
 Object *airplane = nullptr;
-Object *earth = nullptr;
+Earth *earth = nullptr;
 Object *sun = nullptr;
 Object *saturn = nullptr;
 Object *moon = nullptr;
@@ -489,6 +500,7 @@ void drawScreen() {
   earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), -1.5f, 10.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
+  glm::vec3 earthOrigin = earth->getEarthCentre();
 
   glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -546,7 +558,7 @@ int main(int argc, char *argv[]) {
 	// Create object and point to global variables
 	jeep = new Object;
   airplane = new Object;
-	earth = new Object;
+	earth = new Earth;
   sun = new Object;
   saturn = new Object;
   moon = new Object;
