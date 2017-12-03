@@ -30,7 +30,7 @@ using namespace std;
 GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.5f, diffuseCoefficient = 185.0f;
 float cameraPosAngle = 71.0f;
-float orbitalTheta = 0.0f, saturnAlpha = 0.0f;
+float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
@@ -127,25 +127,24 @@ class Object {
       modelScalingMatrix = tempScalingMatrix;
     }
 
-    // Transformation
-    void setTransform(glm::vec3 transform) {
-      tempTransformMatrix = glm::translate(modelMatrix, transform);
-      modelTransformMatrix = tempTransformMatrix;
-    }
-
-    void addTransform(glm::vec3 transform) {
-      modelTransformMatrix = tempTransformMatrix + glm::translate(glm::mat4(1.0f), transform);
-    }
-
-    // Rotation
-    void setRotate(glm::vec3 axis, float thetaDegree) {
-      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+    void setOrigin(glm::vec3 origin) {
+      modelScalingMatrix = glm::translate(modelMatrix, origin) * tempScalingMatrix;
     }
 
     // Rotation with self object space
     void setSelfRotate(glm::vec3 axis, float thetaDegree) {
       glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
       modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+    }
+
+    // Transformation
+    void setTransform(glm::vec3 transform) {
+      modelTransformMatrix = glm::translate(modelMatrix, transform);
+    }
+
+    // Rotation
+    void setRotate(glm::vec3 axis, float thetaDegree) {
+      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
     }
 
     // Passing all matrices to Shader
@@ -472,6 +471,7 @@ void initOpenGL() {
 // Keep looping to draw on screen
 void drawScreen() {
   orbitalTheta += 0.01f;
+  moonTheta += 0.05f;
   saturnAlpha += 0.044f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -497,16 +497,18 @@ void drawScreen() {
 	eyeViewMatrix(programID);
 	lightControl(programID);
   earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
-  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), -1.5f, 10.0f * sin(orbitalTheta)));
+  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), -1.5f + 4.0f * cos(orbitalTheta), 10.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
   glm::vec3 earthOrigin = earth->getEarthCentre();
 
   glUseProgram(programID);
 	eyeViewMatrix(programID);
-	lightControl(programID);
-  moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4);
-  moon->setTransform(glm::vec3(22.0f * cos(orbitalTheta), 0.0f, 15.0f * sin(orbitalTheta)));
+  lightControl(programID);
+  moon->setOrigin(earthOrigin);
+  moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
+  moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
+  // moon->setTransform(glm::vec3(22.0f * cos(orbitalTheta), 0.0f, 15.0f * sin(orbitalTheta)));
 	moon->sendMatrix(programID);
   moon->renderObject();
   
