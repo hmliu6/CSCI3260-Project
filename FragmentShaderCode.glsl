@@ -8,9 +8,12 @@ in vec3 cameraNormal;
 
 out vec3 color;
 
-uniform sampler2D colorTexture;
+
+uniform sampler2D myTextureSampler_1;
 uniform sampler2D normalMap;
+uniform sampler2D myTextureSampler_2;
 uniform bool normalMapFlag;
+uniform bool secondTextureFlag;
 
 uniform vec3 lightPosition;
 uniform float specularCoefficient;
@@ -23,7 +26,11 @@ void main(){
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
   color = vec3(0.0f, 0.0f, 0.0f);
 
-  diffuseLight = texture( colorTexture, UV ).rgb;
+  diffuseLight = texture( myTextureSampler_1, UV ).rgb;
+  if(secondTextureFlag){
+    diffuseLight = 0.7 * texture( myTextureSampler_1, UV ).rgb + 0.3 * texture( myTextureSampler_2, UV ).rgb;
+  }
+
   ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
   specularLight = vec3(specularCoefficient, specularCoefficient, specularCoefficient);
 
@@ -50,7 +57,7 @@ void main(){
 
   if(normalMapFlag){
     N = texture(normalMap, UV).rgb;
-    N = normalize(N * 2.0);
+    N = normalize(N * 2.0f - 1.0f);
   }
 
   float cosTheta = clamp(dot(N, L), 0, 1);
