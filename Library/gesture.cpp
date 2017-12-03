@@ -16,7 +16,7 @@ extern float specularCoefficient, diffuseCoefficient;
 extern float cameraPosAngle;
 
 bool passiveMouseMode = false;
-extern CameraPosition cameraPosition;
+extern float orbitSize, rotationSpeedConstant;
 
 void keyboardClick(unsigned char key, int x, int y){
   if (key == ' ')
@@ -29,14 +29,23 @@ void keyboardClick(unsigned char key, int x, int y){
 
 void arrowKey(int key, int x, int y){
 	if (key == GLUT_KEY_UP){
+	  rotationSpeedConstant += 0.01f;
 	}
 	else if (key == GLUT_KEY_DOWN){
+	  rotationSpeedConstant -= 0.01f;
+	  rotationSpeedConstant = glm::clamp(rotationSpeedConstant, 0.0f, 1.0f);
 	}
 	else if (key == GLUT_KEY_LEFT){
-		cameraPosAngle -= 0.1f;
+	  // cameraPosAngle -= 0.1f;
+	  orbitSize += 0.1f;
+	  orbitSize = glm::clamp(orbitSize, -12.0f, -7.0f);
+	  // Smaller orbit size
 	}
 	else if (key == GLUT_KEY_RIGHT){
-		cameraPosAngle += 0.1f;
+	  // cameraPosAngle += 0.1f;
+	  orbitSize -= 0.1f;
+	  orbitSize = glm::clamp(orbitSize, -12.0f, -7.0f);
+	  // Larger orbit size
 	}
 }
 

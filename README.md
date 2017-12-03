@@ -14,7 +14,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [x] Single texture mapping for planet B
 * [x] Single texture mapping for space vehicle D
 * [x] Single texture mapping for rock G
-* [ ] Multiple texture mapping for planet C
+* [x] Multiple texture mapping for planet C
 * [x] Basic light rendering
 * [x] Self-rotation for planet A, B and C
 * [x] Planet B move around planet A
@@ -25,7 +25,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Fog effect
 * [x] Graphical User Interface (need connect tot the actual function)
 * [ ] Keyboard Interactions, i.e. 'a', 's' and 'd' for switching viewpoints
-* [ ] Speed and orbital control, i.e. &uarr; and &darr; for speed controlling, &larr; and &rarr; for changing orbit size of space vehicle D
+* [x] Speed and orbital control, i.e. &uarr; and &darr; for speed controlling, &larr; and &rarr; for changing orbit size of space vehicle D
 * [ ] Mouse Interaction, i.e. zoom in and out
 
 ### Bonus Features
@@ -34,6 +34,6 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [ ] Provide extra viewpoints attached to space vehicles
 * [ ] Real-time trajectory of space vehicle D with string (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
-* [ ] Asteroid ring cloud with more than 5000 random rocks around C
+* [x] Asteroid ring cloud with more than 5000 random rocks around C
 * [ ] Shadow mapping, Environment mapping, Displacement mapping
 * [ ] Background music with **IrrKlang** library
