@@ -358,6 +358,48 @@ class Airplane : public Object {
     glm::vec3 origin;
 };
 
+class positionArray{
+  public:
+    positionArray(int size){
+      position = (glm::vec3*) malloc(sizeof(glm::vec3) * size);
+      for(int i=0; i<size; i++)
+        position[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+      element = 0;
+    }
+
+    void pushElement(glm::vec3 inputVector){
+      position[element] = inputVector;
+      element += 1;
+    }
+
+    glm::vec3 popElement(){
+      glm::vec3 tempVector = position[0];
+      if(element == 1){
+        element -= 1;
+        position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
+      }
+      else{
+        for(int i=1; i<element; i++)
+          position[i] = position[i-1];
+        element -= 1;
+        position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
+      }
+      return tempVector;
+    }
+
+    int countElement(){
+      return element;
+    }
+
+    glm::vec3 getElement(int index){
+      return position[index];
+    }
+
+  private:
+    glm::vec3 *position;
+    int element;
+};
+
 // Initialize class object pointer globally
 // C++ restricted to global class object declaration
 Object *jeep = nullptr;
@@ -369,6 +411,7 @@ Object *moon = nullptr;
 Object *rock = nullptr;
 glm::mat4* rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 Skybox *background = nullptr;
+positionArray *flightTrack = nullptr;
 // MUST create new object in main and point to variables
 
 // ring cloud location creation
@@ -558,7 +601,7 @@ void drawScreen() {
   glUseProgram(programID);
 	eyeViewMatrix(programID);
   lightControl(programID);
-  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.25f);
+  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.37f);
   airplane->setOrigin(earthOrigin);
   // airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
   airplane->setTransform(glm::vec3(0.0f, -9.0f * cos(airplaneTheta), -9.0f * sin(airplaneTheta)));
@@ -619,6 +662,7 @@ int main(int argc, char *argv[]) {
   moon = new Object;
 	rock = new Object;
 	background = new Skybox;
+  flightTrack = new positionArray(20);
 
 	initOpenGL();
 	glutDisplayFunc(drawScreen);
