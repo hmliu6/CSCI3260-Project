@@ -433,7 +433,13 @@ void objDataToOpenGL() {
 	sun->loadObjToBuffer("resource/sun/planet.obj");
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
 	sun->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
-	sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+  sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+  
+  // Load airplane
+  airplane->loadObjToBuffer("resource/airplane/airplane.obj");
+  airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
+  airplane->loadNormalTextureToBuffer("resource/airplane/airplane_normal.bmp", programID);
+  airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
 
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
@@ -511,6 +517,15 @@ void drawScreen() {
   // moon->setTransform(glm::vec3(22.0f * cos(orbitalTheta), 0.0f, 15.0f * sin(orbitalTheta)));
 	moon->sendMatrix(programID);
   moon->renderObject();
+
+  glUseProgram(programID);
+	eyeViewMatrix(programID);
+  lightControl(programID);
+  airplane->setOrigin(earthOrigin);
+  airplane->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
+  airplane->setTransform(glm::vec3(0.0f, 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
+	airplane->sendMatrix(programID);
+  airplane->renderObject();
   
   glUseProgram(programID);
   eyeViewMatrix(programID);
