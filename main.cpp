@@ -100,7 +100,7 @@ class Object {
       printf("Texture1 ID: %i \n",TextureID);
       glActiveTexture(GL_TEXTURE0);
       glBindTexture(GL_TEXTURE_2D, objectTexture);
-      // glUniform1i(TextureID, 0);
+      glUniform1i(TextureID, 0);
     }
 
 
@@ -175,8 +175,8 @@ class Object {
       glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
       glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
 
-      GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
       GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
+            GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
       glUniform1i(secondTextureFlagID, secondTextureFlag);
       glUniform1i(normalMapFlagID, normalMapFlag);
     }
@@ -185,6 +185,12 @@ class Object {
     void renderObject() {
       glBindVertexArray(VAObuffer);
       glBindTexture(GL_TEXTURE_2D, objectTexture);
+      if(normalMapFlag==1){
+        glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
+      }
+      if(secondTextureFlag==1){
+        glBindTexture(GL_TEXTURE_2D, objectTexture2);
+      }
       glDrawArrays(GL_TRIANGLES, 0, drawSize);
     }
 

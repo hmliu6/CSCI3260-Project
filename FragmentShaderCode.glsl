@@ -12,8 +12,8 @@ out vec3 color;
 uniform sampler2D myTextureSampler_1;
 uniform sampler2D normalMap;
 uniform sampler2D myTextureSampler_2;
-uniform bool secondTextureFlag;
 uniform bool normalMapFlag;
+uniform bool secondTextureFlag;
 
 uniform vec3 lightPosition;
 uniform float specularCoefficient;
@@ -28,7 +28,7 @@ void main(){
 
   diffuseLight = texture( myTextureSampler_1, UV ).rgb;
   if(secondTextureFlag){
-    diffuseLight = 0.2 * texture( myTextureSampler_1, UV ).rgb + 0.8 * texture( myTextureSampler_2, UV ).rgb;
+    diffuseLight = 0.5 * texture( myTextureSampler_1, UV ).rgb + 0.5 * texture( myTextureSampler_2, UV ).rgb;
   }
 
   ambientLight = vec3(ambientCoefficient, ambientCoefficient, ambientCoefficient) * diffuseLight;
