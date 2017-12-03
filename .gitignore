@@ -25,3 +25,5 @@ Debug/*
 
 Library\Dependencies\*
 Library/Dependencies/*
+
+.vscode/
