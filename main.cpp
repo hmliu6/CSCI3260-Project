@@ -366,7 +366,7 @@ void createRandomModel(glm::vec3 modelOrigin) {
 
 // Camera Matrix
 void eyeViewMatrix(GLint shaderProgramID) {
-	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 80.0f);
+	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 120.0f);
 	View = glm::lookAt(
 		glm::vec3(cameraPosition.x * cos(cameraPosAngle), cameraPosition.y, cameraPosition.z * sin(cameraPosAngle)), // Camera is at (x,y,z), in World Space
 		glm::vec3(0.0f, 0.0f, 0.0f), // and looks at point
