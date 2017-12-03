@@ -26,11 +26,13 @@
 
 using namespace std;
 
+#define PI 3.14159265
+
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
 float specularCoefficient = 0.5f, diffuseCoefficient = 185.0f;
 float cameraPosAngle = 71.0f;
-float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f;
+float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta = 0.0f;
 // Parameter for choosing Shader part
 glm::mat4 Projection, View;
 CameraPosition cameraPosition = {
@@ -340,10 +342,44 @@ class Earth : public Object {
     }
 };
 
+class Airplane : public Object {
+  public:
+    Airplane() : Object(){}
+
+    // Scaling
+    void setScale(glm::vec3 scale) {
+      modelScalingMatrix = glm::scale(glm::mat4(), scale);
+    }
+
+    void setOrigin(glm::vec3 inputOrigin) {
+      // modelScalingMatrix = glm::translate(modelMatrix, inputOrigin) * tempScalingMatrix;
+      origin = inputOrigin;
+    }
+
+    // Rotation with self object space
+    void setSelfRotate(glm::vec3 axis, float thetaDegree) {
+      glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+    }
+
+    // Transformation
+    void setTransform(glm::vec3 transform) {
+      modelTransformMatrix = glm::translate(modelMatrix, transform) * glm::translate(modelMatrix, origin);
+    }
+
+    // Rotation
+    void setRotate(glm::vec3 axis, float thetaDegree) {
+      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+    }
+
+  private:
+    glm::vec3 origin;
+};
+
 // Initialize class object pointer globally
 // C++ restricted to global class object declaration
 Object *jeep = nullptr;
-Object *airplane = nullptr;
+Airplane *airplane = nullptr;
 Earth *earth = nullptr;
 Object *sun = nullptr;
 Object *saturn = nullptr;
@@ -498,6 +534,7 @@ void drawScreen() {
   orbitalTheta += 0.01f;
   moonTheta += 0.05f;
   saturnAlpha += 0.044f;
+  airplaneTheta += 0.03f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -522,10 +559,11 @@ void drawScreen() {
 	eyeViewMatrix(programID);
 	lightControl(programID);
   earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
-  earth->setTransform(glm::vec3(16.0f * cos(orbitalTheta), -1.5f + 4.0f * cos(orbitalTheta), 10.0f * sin(orbitalTheta)));
+  earth->setTransform(glm::vec3(20.0f * cos(orbitalTheta), -1.5f, 16.0f * sin(orbitalTheta)));
 	earth->sendMatrix(programID);
   earth->renderObject();
   glm::vec3 earthOrigin = earth->getEarthCentre();
+  // cout << "{" << earthOrigin.x << ", "  << earthOrigin.z << "}  " << orbitalTheta << endl;
 
   glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -533,16 +571,16 @@ void drawScreen() {
   moon->setOrigin(earthOrigin);
   moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
   moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
-  // moon->setTransform(glm::vec3(22.0f * cos(orbitalTheta), 0.0f, 15.0f * sin(orbitalTheta)));
 	moon->sendMatrix(programID);
   moon->renderObject();
 
   glUseProgram(programID);
 	eyeViewMatrix(programID);
   lightControl(programID);
+  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.25f);
   airplane->setOrigin(earthOrigin);
-  airplane->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
-  airplane->setTransform(glm::vec3(0.0f, 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
+  // airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+  airplane->setTransform(glm::vec3(0.0f, -9.0f * cos(airplaneTheta), -9.0f * sin(airplaneTheta)));
 	airplane->sendMatrix(programID);
   airplane->renderObject();
 
@@ -593,7 +631,7 @@ int main(int argc, char *argv[]) {
 
 	// Create object and point to global variables
 	jeep = new Object;
-  airplane = new Object;
+  airplane = new Airplane;
 	earth = new Earth;
   sun = new Object;
   saturn = new Object;
