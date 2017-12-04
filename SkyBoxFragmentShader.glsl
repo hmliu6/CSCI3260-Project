@@ -18,7 +18,7 @@ void main(){
     color = texture(skybox, textureCoords);
     // color = vec4(textureCoords, 1.0f);
 
-    fogColor = vec4(fogColorVec3, 0);
+    fogColor = vec4(fogColorVec3, 1.0f);
     if(fogFlag == 1){
       //float distance = length((viewMatrix * RotationMatrix * TransformMatrix * ScalingMatrix * v));
       float visibility = 1;
