@@ -35,8 +35,9 @@ float cameraPosAngle = 71.0f;
 float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta = 0.0f;
 
 // Parameter for choosing Shader part
+float zoomConstant = 0.0f;
 glm::mat4 Projection, View;
-glm::vec3 cameraPosition = glm::vec3(60.0f, 20.0f, 60.0f);
+glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 
 glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
@@ -428,6 +429,7 @@ Object *sun = nullptr;
 Object *saturn = nullptr;
 Object *moon = nullptr;
 Object *rock = nullptr;
+Object *star = nullptr;
 glm::mat4* rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 Skybox *background = nullptr;
 positionArray *flightTrack = nullptr;
@@ -536,7 +538,13 @@ void objDataToOpenGL() {
 	airplane->loadObjToBuffer("resource/airplane/airplane.obj");
 	airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
 	airplane->loadNormalTextureToBuffer("resource/airplane/airplane_normal.bmp", programID);
-	airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
+  airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
+  
+  // Load star
+  star->loadObjToBuffer("resource/star/star.obj");
+  star->loadTextureToBuffer("resource/star/star.bmp", programID);
+  star->loadNormalTextureToBuffer("resource/star/star_normal.bmp", programID);
+  star->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
 
 	// Load rock
 	rock->loadObjToBuffer("resource/rock/rock.obj");
@@ -625,7 +633,7 @@ void drawScreen() {
   airplane->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta), orbitSize * sin(airplaneTheta)));
 	airplane->sendMatrix(programID);
 	airplane->renderObject();
-  cout << "{" << orbitSize << "}" << endl;
+  // cout << "{" << orbitSize << "}" << endl;
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -640,7 +648,13 @@ void drawScreen() {
 	lightControl(lightSourceProgramID);
 	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	sun->sendMatrix(lightSourceProgramID);
-	sun->renderObject();
+  sun->renderObject();
+  
+  glUseProgram(programID);
+	eyeViewMatrix(programID);
+	lightControl(programID);
+	star->sendMatrix(programID);
+	star->renderObject();
 
 	// Order of sending matrices must NOT be changed
 	glUseProgram(skyboxProgramID);
@@ -672,7 +686,8 @@ int main(int argc, char *argv[]) {
 	sun = new Object;
 	saturn = new Object;
 	moon = new Object;
-	rock = new Object;
+  rock = new Object;
+  star = new Object;
 	background = new Skybox;
   flightTrack = new positionArray(20);
 

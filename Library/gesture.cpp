@@ -13,7 +13,7 @@
 using namespace std;
 
 extern float specularCoefficient, diffuseCoefficient;
-extern float cameraPosAngle;
+extern float cameraPosAngle, zoomConstant;
 
 bool passiveMouseMode = false;
 extern float orbitSize, rotationSpeedConstant;
@@ -23,6 +23,10 @@ void keyboardClick(unsigned char key, int x, int y){
 	passiveMouseMode = !passiveMouseMode;
   else if (key == 'a'){
   }
+	else if (key == 'o')
+		zoomConstant += 1.0f;
+	else if (key == 'l')
+		zoomConstant -= 1.0f;
   else if (key == 'q')
     exit(0);
 }
