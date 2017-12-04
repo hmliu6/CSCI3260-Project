@@ -34,6 +34,6 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [ ] Provide extra viewpoints attached to space vehicles
 * [ ] Real-time trajectory of space vehicle D with string (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
-* [x] Asteroid ring cloud with more than 5000 random rocks around C
+* [ ] Asteroid ring cloud with more than 5000 random rocks around C
 * [ ] Shadow mapping, Environment mapping, Displacement mapping
 * [ ] Background music with **IrrKlang** library
