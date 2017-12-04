@@ -22,7 +22,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [x] Move around A for space vehicle D
 * [x] Move around planet B for all rocks G
 * [ ] 3 distinct viewpoints for choices, i.e. -X, +X, +Y axis
-* [ ] Fog effect
+* [X] Fog effect
 * [x] Graphical User Interface (need connect tot the actual function)
 * [ ] Keyboard Interactions, i.e. 'a', 's' and 'd' for switching viewpoints
 * [x] Speed and orbital control, i.e. &uarr; and &darr; for speed controlling, &larr; and &rarr; for changing orbit size of space vehicle D
