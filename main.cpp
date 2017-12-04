@@ -206,131 +206,131 @@ class Object {
   };
 
   class Skybox : public Object {
-  public:
-    // Class constructor
-    Skybox() {
-      glGenBuffers(1, &VAObuffer);
-      glGenBuffers(1, &vertexVBO);
-      glGenTextures(1, &skyboxTexture);
-      modelScalingMatrix = glm::mat4(1.0f);
-      modelTransformMatrix = glm::mat4(1.0f);
-      modelRotationMatrix = glm::mat4(1.0f);
-    }
-
-    void loadVerticesToBuffer(float size) {
-      GLfloat points[] = {
-        // positions
-        -1.0f,  1.0f, -1.0f,
-        -1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f, -1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-
-        -1.0f, -1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f,
-        -1.0f, -1.0f,  1.0f,
-
-        -1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f, -1.0f,
-        1.0f,  1.0f,  1.0f,
-        1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f,  1.0f,
-        -1.0f,  1.0f, -1.0f,
-
-        -1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f, -1.0f,
-        1.0f, -1.0f, -1.0f,
-        -1.0f, -1.0f,  1.0f,
-        1.0f, -1.0f,  1.0f };
-
-      for (int i = 0; i < sizeof(points) / sizeof(float); i++)
-        points[i] *= size;
-
-      glGenVertexArrays(1, &VAObuffer);
-      glBindVertexArray(VAObuffer);
-
-      // Bind Vertices Data to Buffer
-      glGenBuffers(1, &vertexVBO);
-      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-      glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-      glEnableVertexAttribArray(0);
-      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
-
-    }
-
-    void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
-      vector<const GLchar*> skyfaces;
-      skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
-      skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
-      skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
-
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-      int width, height;
-      unsigned char *image;
-
-      for (GLuint i = 0; i < skyfaces.size(); i++) {
-        loadBMP_Data(skyfaces[i], image, width, height);
-        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+    public:
+      // Class constructor
+      Skybox() {
+        glGenBuffers(1, &VAObuffer);
+        glGenBuffers(1, &vertexVBO);
+        glGenTextures(1, &skyboxTexture);
+        modelScalingMatrix = glm::mat4(1.0f);
+        modelTransformMatrix = glm::mat4(1.0f);
+        modelRotationMatrix = glm::mat4(1.0f);
       }
 
-      // format cube map texture
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-    }
+      void loadVerticesToBuffer(float size) {
+        GLfloat points[] = {
+          // positions
+          -1.0f,  1.0f, -1.0f,
+          -1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f,  1.0f, -1.0f,
+          -1.0f,  1.0f, -1.0f,
 
-    void renderSkybox() {
-      glm::mat4 tempView = View;
+          -1.0f, -1.0f,  1.0f,
+          -1.0f, -1.0f, -1.0f,
+          -1.0f,  1.0f, -1.0f,
+          -1.0f,  1.0f, -1.0f,
+          -1.0f,  1.0f,  1.0f,
+          -1.0f, -1.0f,  1.0f,
 
-      glUseProgram(skyboxProgramID);
-      glDepthMask(GL_FALSE);
-      glDisable(GL_CULL_FACE);
+          1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
 
-      View = glm::mat4(glm::mat3(View));
+          -1.0f, -1.0f,  1.0f,
+          -1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f, -1.0f,  1.0f,
+          -1.0f, -1.0f,  1.0f,
 
-      sendMatrix(skyboxProgramID);
-      glBindVertexArray(VAObuffer);
+          -1.0f,  1.0f, -1.0f,
+          1.0f,  1.0f, -1.0f,
+          1.0f,  1.0f,  1.0f,
+          1.0f,  1.0f,  1.0f,
+          -1.0f,  1.0f,  1.0f,
+          -1.0f,  1.0f, -1.0f,
 
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+          -1.0f, -1.0f, -1.0f,
+          -1.0f, -1.0f,  1.0f,
+          1.0f, -1.0f, -1.0f,
+          1.0f, -1.0f, -1.0f,
+          -1.0f, -1.0f,  1.0f,
+          1.0f, -1.0f,  1.0f };
 
-      glDrawArrays(GL_TRIANGLES, 0, 36);
+        for (int i = 0; i < sizeof(points) / sizeof(float); i++)
+          points[i] *= size;
 
-      glEnable(GL_CULL_FACE);
-      glDepthMask(GL_TRUE);
-      glUseProgram(programID);
+        glGenVertexArrays(1, &VAObuffer);
+        glBindVertexArray(VAObuffer);
 
-      View = tempView;
-    }
+        // Bind Vertices Data to Buffer
+        glGenBuffers(1, &vertexVBO);
+        glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+        glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-  private:
-    GLuint skyboxTexture;
-    GLuint VAObuffer, vertexVBO;
-    GLsizei drawSize;
-    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
+      }
+
+      void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
+        vector<const GLchar*> skyfaces;
+        skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
+        skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
+        skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+        int width, height;
+        unsigned char *image;
+
+        for (GLuint i = 0; i < skyfaces.size(); i++) {
+          loadBMP_Data(skyfaces[i], image, width, height);
+          glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+        }
+
+        // format cube map texture
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+      }
+
+      void renderSkybox() {
+        glm::mat4 tempView = View;
+
+        glUseProgram(skyboxProgramID);
+        glDepthMask(GL_FALSE);
+        glDisable(GL_CULL_FACE);
+
+        View = glm::mat4(glm::mat3(View));
+
+        sendMatrix(skyboxProgramID);
+        glBindVertexArray(VAObuffer);
+
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+
+        glEnable(GL_CULL_FACE);
+        glDepthMask(GL_TRUE);
+        glUseProgram(programID);
+
+        View = tempView;
+      }
+
+    private:
+      GLuint skyboxTexture;
+      GLuint VAObuffer, vertexVBO;
+      GLsizei drawSize;
+      glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
 };
 
 class Earth : public Object {
@@ -430,14 +430,15 @@ Object *saturn = nullptr;
 Object *moon = nullptr;
 Object *rock = nullptr;
 Object *star = nullptr;
-glm::mat4* rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
+glm::vec3* rockTransformVec = new glm::vec3[NUMBER_OF_ROCK];
+glm::vec3* rockScaleVec = new glm::vec3[NUMBER_OF_ROCK];
+GLfloat* rockRotateTheta = new GLfloat[NUMBER_OF_ROCK];
 Skybox *background = nullptr;
 positionArray *flightTrack = nullptr;
 // MUST create new object in main and point to variables
 
 // ring cloud location creation
 void createRandomModel(glm::vec3 modelOrigin) {
-	rockMatrices = new glm::mat4[NUMBER_OF_ROCK];
 	srand(glutGet(GLUT_ELAPSED_TIME)); // initialize random seed
 	GLfloat radius = 6.0f;
 	GLfloat offset = 0.4f;
@@ -456,11 +457,12 @@ void createRandomModel(glm::vec3 modelOrigin) {
 		GLfloat scale = (rand() % 10) / 100.0f + 0.05;
 		GLfloat rotAngle = (rand() % 360);
 
-		model = glm::translate(model, glm::vec3(modelOrigin.x + x, modelOrigin.y + y, modelOrigin.z + z));
-		model = glm::scale(model, glm::vec3(scale));
-		model = glm::rotate(model, rotAngle, glm::vec3(0.2f, 0.4f, 0.8f));
+		rockTransformVec[i] = glm::vec3(modelOrigin.x + x, modelOrigin.y + y, modelOrigin.z + z);
+		rockScaleVec[i] = glm::vec3(scale);
+		rockRotateTheta[i] = rotAngle;
+    // glm::rotate(model, rotAngle, glm::vec3(0.2f, 0.4f, 0.8f));
 
-		rockMatrices[i] = model;
+		// rockMatrices[i] = model;
 	}
 }
 
@@ -539,7 +541,7 @@ void objDataToOpenGL() {
 	airplane->loadTextureToBuffer("resource/airplane/airplane.bmp", programID);
 	airplane->loadNormalTextureToBuffer("resource/airplane/airplane_normal.bmp", programID);
   airplane->setScale(glm::vec3(0.05f, 0.05f, 0.05f));
-  
+
   // Load star
   star->loadObjToBuffer("resource/star/star.obj");
   star->loadTextureToBuffer("resource/star/star.bmp", programID);
@@ -599,8 +601,11 @@ void drawScreen() {
 	glUseProgram(programID);
 	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++) {
 		eyeViewMatrix(programID);
-		rock->setModelMatrix(rockMatrices[i]);
-		rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
+		// rock->setModelMatrix(rockMatrices[i]);
+		rock->setScale(rockScaleVec[i]);
+		rock->setSelfRotate(glm::vec3(0.2f, 0.4f, 0.8f), rockRotateTheta[i]);
+		rock->setTransform(rockTransformVec[i]);
+		// rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
 		rock->sendMatrix(programID);
 		rock->renderObject();
 	}
@@ -649,7 +654,7 @@ void drawScreen() {
 	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	sun->sendMatrix(lightSourceProgramID);
   sun->renderObject();
-  
+
   glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
