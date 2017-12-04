@@ -36,7 +36,7 @@ float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta =
 
 // Parameter for switch on fog
 GLuint fogFlag = 1;
-float fogDensity = 0.013f;
+float fogDensity = 0.017f;
 float fogGradient = 3.5f;
 
 // Parameter for choosing Shader part

@@ -2,7 +2,7 @@
 	#include <GLUT/glut.h>
 #elif defined _WIN32 || defined _WIN64
 	#include "Dependencies/freeglut/freeglut.h"
-#endif 
+#endif
 
 #include <iostream>
 #include <cmath>
@@ -14,6 +14,7 @@ using namespace std;
 
 extern float specularCoefficient, diffuseCoefficient;
 extern float cameraPosAngle, zoomConstant;
+extern GLuint fogFlag;
 
 bool passiveMouseMode = false;
 extern float orbitSize, rotationSpeedConstant;
@@ -27,6 +28,8 @@ void keyboardClick(unsigned char key, int x, int y){
 		zoomConstant += 1.0f;
 	else if (key == 'l')
 		zoomConstant -= 1.0f;
+	else if (key == '1')
+		fogFlag = fogFlag ? 0 : 1;
   else if (key == 'q')
     exit(0);
 }
@@ -54,7 +57,7 @@ void arrowKey(int key, int x, int y){
 }
 
 void mouseCoordinate(int x, int y){
-	
+
 }
 
 void mouseWheelFunc(int button, int state, int x, int y){
