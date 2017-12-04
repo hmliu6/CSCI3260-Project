@@ -29,7 +29,6 @@ float ambientCoefficient = 0.5f;
 
 
 void main(){
-  float visibility = 1;
   vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
   color = vec3(0.0f, 0.0f, 0.0f);
 
@@ -77,6 +76,7 @@ void main(){
           + specularLight * lightColor * 20.0f * pow(cosAlpha, 10) / distanceParams;
 
   if(fogFlag == 1){
+    float visibility = 1;
     //float distance = length((viewMatrix * RotationMatrix * TransformMatrix * ScalingMatrix * v));
     float distance_of_eye_to_vertex = distance(cameraEye,worldPos);
     visibility = exp(-pow((distance_of_eye_to_vertex * fogDensity), fogGradient));

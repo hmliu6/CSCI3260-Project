@@ -216,7 +216,7 @@ class Object {
     glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
   };
 
-  class Skybox : public Object {
+class Skybox : public Object {
     public:
       // Class constructor
       Skybox() {
@@ -314,6 +314,14 @@ class Object {
       }
 
       void renderSkybox() {
+
+        GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
+        GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
+        GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
+        glUniform1i(fogFlagID, fogFlag);
+        glUniform1f(fogDensityID, fogDensity);
+        glUniform1f(fogGradientID, fogGradient);
+
         glm::mat4 tempView = View;
 
         glUseProgram(skyboxProgramID);
