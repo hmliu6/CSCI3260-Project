@@ -18,8 +18,7 @@ uniform float diffuseCoefficient;
 uniform int fogFlag;
 uniform float fogDensity;
 uniform float fogGradient;
-
-const vec3 fogColor = vec3(0.5, 0.5,0.5);
+uniform vec3 fogColor;
 
 vec3 diffuseLight, ambientLight, specularLight;
 float ambientCoefficient = 1.7f;

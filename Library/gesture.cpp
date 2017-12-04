@@ -15,6 +15,7 @@ using namespace std;
 extern float specularCoefficient, diffuseCoefficient;
 extern float cameraPosAngle, zoomConstant;
 extern GLuint fogFlag;
+extern glm::vec3 fogColor;
 
 bool passiveMouseMode = false;
 extern float orbitSize, rotationSpeedConstant;
@@ -30,6 +31,8 @@ void keyboardClick(unsigned char key, int x, int y){
 		zoomConstant -= 1.0f;
 	else if (key == '1')
 		fogFlag = fogFlag ? 0 : 1;
+	else if (key == '2')
+		fogColor = fogColor == glm::vec3(0.5, 0.5,0.5) ? glm::vec3(0.5, 0.5,0.6) : glm::vec3(0.5, 0.5,0.5);
   else if (key == 'q')
     exit(0);
 }

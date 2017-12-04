@@ -17,8 +17,7 @@ uniform bool secondTextureFlag;
 uniform int fogFlag;
 uniform float fogDensity;
 uniform float fogGradient;
-
-const vec3 fogColor = vec3(0.5, 0.5,0.5);
+uniform vec3 fogColor;
 
 uniform vec3 lightPosition;
 uniform float specularCoefficient;

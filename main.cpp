@@ -38,6 +38,7 @@ float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta =
 GLuint fogFlag = 1;
 float fogDensity = 0.017f;
 float fogGradient = 3.5f;
+glm::vec3 fogColor = glm::vec3(0.5, 0.5,0.5);
 
 // Parameter for choosing Shader part
 float zoomConstant = 0.0f;
@@ -177,9 +178,11 @@ class Object {
       GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
       GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
       GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
+      GLuint fogColorID = glGetUniformLocation(shaderProgramID, "fogColor");
       glUniform1i(fogFlagID, fogFlag);
       glUniform1f(fogDensityID, fogDensity);
       glUniform1f(fogGradientID, fogGradient);
+      glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
     }
 
     // Bind object buffer and draw on screen
@@ -318,9 +321,11 @@ class Skybox : public Object {
         GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
         GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
         GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
+        GLuint fogColorID = glGetUniformLocation(skyboxProgramID, "fogColorVec3");
         glUniform1i(fogFlagID, fogFlag);
         glUniform1f(fogDensityID, fogDensity);
         glUniform1f(fogGradientID, fogGradient);
+        glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
 
         glm::mat4 tempView = View;
 
