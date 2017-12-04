@@ -34,6 +34,9 @@ float specularCoefficient = 0.5f, diffuseCoefficient = 185.0f;
 float cameraPosAngle = 71.0f;
 float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta = 0.0f;
 
+// Parameter for switch on fog
+GLuint fogFlag = 1;
+
 // Parameter for choosing Shader part
 float zoomConstant = 0.0f;
 glm::mat4 Projection, View;
@@ -167,8 +170,10 @@ class Object {
 
       GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
       GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
+      GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
       glUniform1i(secondTextureFlagID, secondTextureFlag);
       glUniform1i(normalMapFlagID, normalMapFlag);
+      glUniform1i(fogFlagID, fogFlag);
     }
 
     // Bind object buffer and draw on screen

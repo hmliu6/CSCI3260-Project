@@ -6,6 +6,7 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in vec3 tangent;
 layout(location = 4) in vec3 bitangent;
 
+
 uniform mat4 ScalingMatrix;
 uniform mat4 TransformMatrix;
 uniform mat4 RotationMatrix;
@@ -25,7 +26,10 @@ out vec3 cameraNormal;
 
 void main()
 {
+
   vec4 v = vec4(position, 1.0f);
+
+
   vec4 new_position = PVM * RotationMatrix * TransformMatrix * ScalingMatrix * v;
 	gl_Position = new_position;
 
