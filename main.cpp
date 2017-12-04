@@ -36,6 +36,8 @@ float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta =
 
 // Parameter for switch on fog
 GLuint fogFlag = 1;
+float fogDensity = 0.013f;
+float fogGradient = 3.5f;
 
 // Parameter for choosing Shader part
 float zoomConstant = 0.0f;
@@ -170,10 +172,14 @@ class Object {
 
       GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
       GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
-      GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
       glUniform1i(secondTextureFlagID, secondTextureFlag);
       glUniform1i(normalMapFlagID, normalMapFlag);
+      GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
+      GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
+      GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
       glUniform1i(fogFlagID, fogFlag);
+      glUniform1f(fogDensityID, fogDensity);
+      glUniform1f(fogGradientID, fogGradient);
     }
 
     // Bind object buffer and draw on screen

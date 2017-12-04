@@ -15,6 +15,10 @@ uniform sampler2D myTextureSampler_2;
 uniform bool normalMapFlag;
 uniform bool secondTextureFlag;
 uniform int fogFlag;
+uniform float fogDensity;
+uniform float fogGradient;
+
+const vec3 fogColor = vec3(0.5, 0.5,0.5);
 
 uniform vec3 lightPosition;
 uniform float specularCoefficient;
@@ -22,10 +26,7 @@ uniform float diffuseCoefficient;
 
 vec3 diffuseLight, ambientLight, specularLight;
 float ambientCoefficient = 0.5f;
-const vec3 fogColor = vec3(0.5, 0.5,0.5);
 
-const float FogDensity = 0.015;
-const float FogGradient = 3.5;
 
 void main(){
   float visibility = 1;
@@ -78,7 +79,7 @@ void main(){
   if(fogFlag == 1){
     //float distance = length((viewMatrix * RotationMatrix * TransformMatrix * ScalingMatrix * v));
     float distance_of_eye_to_vertex = distance(cameraEye,worldPos);
-    visibility = exp(-pow((distance_of_eye_to_vertex * FogDensity), FogGradient));
+    visibility = exp(-pow((distance_of_eye_to_vertex * fogDensity), fogGradient));
     visibility = clamp(visibility, 0, 1);
     color = mix(fogColor, color, visibility);
   }else{
