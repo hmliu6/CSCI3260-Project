@@ -74,20 +74,21 @@ class Object {
       tempTransformMatrix = glm::mat4(1.0f);
       normalMapFlag = 0;
       secondTextureFlag = 0;
-      nearCoords = glm::vec3(0.0f);
-      farCoords = glm::vec3(0.0f);
+      cubeCoords = (struct boundingBox *)malloc(sizeof(struct boundingBox));
+      cubeCoords->minCubeVertex = glm::vec3(0.0f);
+      cubeCoords->maxCubeVertex = glm::vec3(0.0f);
     }
 
     // To check with xyz-near/far and update
     void getBoundaryBox(glm::vec3 input){
       // Assume Near is always smaller than Far
-      nearCoords.x = (nearCoords.x > input.x) ? input.x : nearCoords.x;
-      nearCoords.y = (nearCoords.y > input.y) ? input.y : nearCoords.y;
-      nearCoords.z = (nearCoords.z > input.z) ? input.z : nearCoords.z;
+      cubeCoords->minCubeVertex.x = (cubeCoords->minCubeVertex.x > input.x) ? input.x : cubeCoords->minCubeVertex.x;
+      cubeCoords->minCubeVertex.y = (cubeCoords->minCubeVertex.y > input.y) ? input.y : cubeCoords->minCubeVertex.y;
+      cubeCoords->minCubeVertex.z = (cubeCoords->minCubeVertex.z > input.z) ? input.z : cubeCoords->minCubeVertex.z;
 
-      farCoords.x = (farCoords.x < input.x) ? input.x : farCoords.x;
-      farCoords.y = (farCoords.y < input.y) ? input.y : farCoords.y;
-      farCoords.z = (farCoords.z < input.z) ? input.z : farCoords.z;
+      cubeCoords->maxCubeVertex.x = (cubeCoords->maxCubeVertex.x < input.x) ? input.x : cubeCoords->maxCubeVertex.x;
+      cubeCoords->maxCubeVertex.y = (cubeCoords->maxCubeVertex.y < input.y) ? input.y : cubeCoords->maxCubeVertex.y;
+      cubeCoords->maxCubeVertex.z = (cubeCoords->maxCubeVertex.z < input.z) ? input.z : cubeCoords->maxCubeVertex.z;
     }
 
     // Pass all object data to buffer
@@ -229,15 +230,26 @@ class Object {
     }
 
     glm::vec3 currentMinVertex(){
-      glm::vec4 tempMin = glm::vec4(nearCoords, 1.0f);
+      glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
       tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
       return glm::vec3(tempMin.x, tempMin.y, tempMin.z);
     }
 
     glm::vec3 currentMaxVertex(){
-      glm::vec4 tempMax = glm::vec4(nearCoords, 1.0f);
+      glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
       tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
       return glm::vec3(tempMax.x, tempMax.y, tempMax.z);
+    }
+
+    struct boundingBox * currentBox(){
+      glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
+      tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
+      glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
+      tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
+      struct boundingBox *tempBox  = (struct boundingBox *)malloc(sizeof(struct boundingBox));
+      tempBox->minCubeVertex = glm::vec3(tempMin.x, tempMin.y, tempMin.z);
+      tempBox->maxCubeVertex = glm::vec3(tempMax.x, tempMax.y, tempMax.z);
+      return tempBox;
     }
 
   protected:
@@ -254,7 +266,7 @@ class Object {
     glm::mat4 modelMatrix;
     glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
 
-    glm::vec3 nearCoords, farCoords;
+    struct boundingBox *cubeCoords;
 };
 
 class Skybox : public Object {
@@ -719,8 +731,11 @@ void drawScreen() {
 	lightControl(programID);
 	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
 	earth->setTransform(glm::vec3(20.0f * cos(orbitalTheta), -1.5f, 16.0f * sin(orbitalTheta)));
-	earth->sendMatrix(programID);
-	earth->renderObject();
+  bool earthBound = collisionTest(sun->currentBox(), earth->currentBox());
+  if(!earthBound){
+    earth->sendMatrix(programID);
+    earth->renderObject();
+  }
 	glm::vec3 earthOrigin = earth->getEarthCentre();
 	// cout << "{ " << cameraPosition.x << ", "  << cameraPosition.y << ", " << cameraPosition.z << " }" << endl;
 
@@ -729,8 +744,12 @@ void drawScreen() {
 	lightControl(programID);
 	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
 	// saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
-	saturn->sendMatrix(programID);
-	saturn->renderObject();
+  bool saturnBound = collisionTest(sun->currentBox(), saturn->currentBox()) &&
+                     collisionTest(earth->currentBox(), saturn->currentBox());
+  if(!saturnBound){
+    saturn->sendMatrix(programID);
+    saturn->renderObject();
+  }
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -738,8 +757,13 @@ void drawScreen() {
 	moon->setOrigin(earthOrigin);
 	moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
 	moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
-	moon->sendMatrix(programID);
-	moon->renderObject();
+  bool moonBound = collisionTest(sun->currentBox(), moon->currentBox()) &&
+                   collisionTest(earth->currentBox(), moon->currentBox()) &&
+                   collisionTest(saturn->currentBox(), moon->currentBox());
+  if(!moonBound){
+    moon->sendMatrix(programID);
+    moon->renderObject();
+  }
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -747,8 +771,14 @@ void drawScreen() {
   airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.52f);
   airplane->setOrigin(earthOrigin);
   airplane->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta), orbitSize * sin(airplaneTheta)));
-	airplane->sendMatrix(programID);
-	airplane->renderObject();
+  bool airplaneBound = collisionTest(sun->currentBox(), airplane->currentBox()) &&
+                       collisionTest(earth->currentBox(), airplane->currentBox()) &&
+                       collisionTest(saturn->currentBox(), airplane->currentBox()) &&
+                       collisionTest(moon->currentBox(), airplane->currentBox());
+  if(!airplaneBound){
+    airplane->sendMatrix(programID);
+    airplane->renderObject();
+  }
 
   glUseProgram(programID);
   for(int i=1; i<STAR_TRACK_SIZE; i++){
@@ -757,8 +787,15 @@ void drawScreen() {
     star->setScale(glm::vec3(maxSize * (10-i), maxSize * (10-i), maxSize * (10-i)));
     star->setOrigin(earthOrigin);
     star->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta - i*0.3f), orbitSize * sin(airplaneTheta - i*0.3f)));
-    star->sendMatrix(programID);
-    star->renderObject();
+    bool starBound = collisionTest(sun->currentBox(), star->currentBox()) &&
+                     collisionTest(earth->currentBox(), star->currentBox()) &&
+                     collisionTest(saturn->currentBox(), star->currentBox()) &&
+                     collisionTest(moon->currentBox(), star->currentBox()) &&
+                     collisionTest(airplane->currentBox(), star->currentBox());
+    if(!starBound){
+      star->sendMatrix(programID);
+      star->renderObject();
+    }
   }
 
   glUseProgram(programID);
@@ -769,9 +806,34 @@ void drawScreen() {
 		rock->setSelfRotate(glm::vec3(0.2f, 0.4f, 0.8f), rockRotateTheta[i]);
 		rock->setTransform(rockTransformVec[i]);
 		// rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
-		rock->sendMatrix(programID);
-		rock->renderObject();
+    bool rockBound = collisionTest(sun->currentBox(), rock->currentBox()) &&
+                     collisionTest(earth->currentBox(), rock->currentBox()) &&
+                     collisionTest(saturn->currentBox(), rock->currentBox()) &&
+                     collisionTest(moon->currentBox(), rock->currentBox()) &&
+                     collisionTest(airplane->currentBox(), rock->currentBox()) &&
+                     collisionTest(star->currentBox(), rock->currentBox());
+    if(!rockBound){
+      rock->sendMatrix(programID);
+      rock->renderObject();
+    }
 	}
+
+  // For displaying bounding box function
+  // glUseProgram(programID);
+  // eyeViewMatrix(programID);
+  // lightControl(programID);
+  // star->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
+  // star->setOrigin(glm::vec3(0.0f, 0.0f, 0.0f));
+  // star->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+  // bool tempBound = collisionTest(sun->currentBox(), star->currentBox());
+  // struct boundingBox *temp = sun->currentBox();
+  // struct boundingBox *tempX = star->currentBox();
+  // cout << "SUN: " << temp->minCubeVertex.x << ", " << temp->minCubeVertex.y << ", " << temp->minCubeVertex.z << ",   " << temp->maxCubeVertex.x << ", " << temp->maxCubeVertex.y << ", " << temp->maxCubeVertex.z << "}" << endl;
+  // cout << "STAR: " << tempX->minCubeVertex.x << ", " << tempX->minCubeVertex.y << ", " << tempX->minCubeVertex.z << ",   " << tempX->maxCubeVertex.x << ", " << tempX->maxCubeVertex.y << ", " << tempX->maxCubeVertex.z << "}" << endl;
+  // if(!tempBound){
+  //   star->sendMatrix(programID);
+  //   star->renderObject();
+  // }
 
 	// Order of sending matrices must NOT be changed
 	glUseProgram(skyboxProgramID);
