@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cmath>
 #include "Dependencies/glm/glm.hpp"
+#include "Dependencies/glm/gtc/matrix_transform.hpp"
 #include "cameraPosition.hpp"
 #include "constant.hpp"
 
@@ -17,6 +18,8 @@ extern float cameraPosAngle, zoomConstant;
 extern GLuint fogFlag;
 extern glm::vec3 fogColor;
 extern glm::vec3 cameraPosition;
+extern float perspectiveAngle;
+extern int viewFlag;
 
 bool passiveMouseMode = false;
 extern float orbitSize, rotationSpeedConstant;
@@ -26,18 +29,38 @@ void keyboardClick(unsigned char key, int x, int y){
 	passiveMouseMode = !passiveMouseMode;
   else if (key == 'a'){
   }
+
+	// Zoom in/out Effect
 	else if (key == 'o'){
 		zoomConstant += 1.0f;
 		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 		cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
-	}else if (key == 'l'){
+	}
+	else if (key == 'l'){
 		zoomConstant -= 1.0f;
 		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 		cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
-	}else if (key == '1')
+	}
+	//
+
+	else if (key == ','){
+		// Viewpoint at +Y axis
+		perspectiveAngle = 90.0f;
+		viewFlag = 2;
+	}
+	else if (key == '.'){
+		// Back to original viewpoint
+		perspectiveAngle = 45.0f;
+		viewFlag = 0;
+	}
+
+	// Fog Effect
+	else if (key == '1')
 		fogFlag = fogFlag ? 0 : 1;
 	else if (key == '2')
 		fogColor = fogColor == glm::vec3(0.5, 0.5, 0.5) ? glm::vec3(0.5, 0.5, 0.6) : glm::vec3(0.5, 0.5, 0.5);
+	//
+
   else if (key == 'q')
     exit(0);
 }

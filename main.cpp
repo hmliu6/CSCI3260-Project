@@ -45,8 +45,11 @@ float zoomConstant = 0.0f;
 glm::mat4 Projection, View;
 glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 
+// Parameters for camera and lighting
 glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
+float perspectiveAngle = 45.0f;
+int viewFlag = 0;
 
 // Parameters for controlling space vehicle
 float orbitSize = -9.0f, rotationSpeedConstant = 0.03f;
@@ -220,141 +223,141 @@ class Object {
   };
 
 class Skybox : public Object {
-    public:
-      // Class constructor
-      Skybox() {
-        glGenBuffers(1, &VAObuffer);
-        glGenBuffers(1, &vertexVBO);
-        glGenTextures(1, &skyboxTexture);
-        modelScalingMatrix = glm::mat4(1.0f);
-        modelTransformMatrix = glm::mat4(1.0f);
-        modelRotationMatrix = glm::mat4(1.0f);
+  public:
+    // Class constructor
+    Skybox() {
+      glGenBuffers(1, &VAObuffer);
+      glGenBuffers(1, &vertexVBO);
+      glGenTextures(1, &skyboxTexture);
+      modelScalingMatrix = glm::mat4(1.0f);
+      modelTransformMatrix = glm::mat4(1.0f);
+      modelRotationMatrix = glm::mat4(1.0f);
+    }
+
+    void loadVerticesToBuffer(float size) {
+      GLfloat points[] = {
+        // positions
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+
+        -1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
+
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f };
+
+      for (int i = 0; i < sizeof(points) / sizeof(float); i++)
+        points[i] *= size;
+
+      glGenVertexArrays(1, &VAObuffer);
+      glBindVertexArray(VAObuffer);
+
+      // Bind Vertices Data to Buffer
+      glGenBuffers(1, &vertexVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+
+    }
+
+    void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
+      vector<const GLchar*> skyfaces;
+      skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
+      skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
+      skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
+
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+      int width, height;
+      unsigned char *image;
+
+      for (GLuint i = 0; i < skyfaces.size(); i++) {
+        loadBMP_Data(skyfaces[i], image, width, height);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
       }
 
-      void loadVerticesToBuffer(float size) {
-        GLfloat points[] = {
-          // positions
-          -1.0f,  1.0f, -1.0f,
-          -1.0f, -1.0f, -1.0f,
-          1.0f, -1.0f, -1.0f,
-          1.0f, -1.0f, -1.0f,
-          1.0f,  1.0f, -1.0f,
-          -1.0f,  1.0f, -1.0f,
+      // format cube map texture
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
 
-          -1.0f, -1.0f,  1.0f,
-          -1.0f, -1.0f, -1.0f,
-          -1.0f,  1.0f, -1.0f,
-          -1.0f,  1.0f, -1.0f,
-          -1.0f,  1.0f,  1.0f,
-          -1.0f, -1.0f,  1.0f,
+    void renderSkybox() {
 
-          1.0f, -1.0f, -1.0f,
-          1.0f, -1.0f,  1.0f,
-          1.0f,  1.0f,  1.0f,
-          1.0f,  1.0f,  1.0f,
-          1.0f,  1.0f, -1.0f,
-          1.0f, -1.0f, -1.0f,
+      GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
+      GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
+      GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
+      GLuint fogColorID = glGetUniformLocation(skyboxProgramID, "fogColorVec3");
+      glUniform1i(fogFlagID, fogFlag);
+      glUniform1f(fogDensityID, fogDensity);
+      glUniform1f(fogGradientID, fogGradient);
+      glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
 
-          -1.0f, -1.0f,  1.0f,
-          -1.0f,  1.0f,  1.0f,
-          1.0f,  1.0f,  1.0f,
-          1.0f,  1.0f,  1.0f,
-          1.0f, -1.0f,  1.0f,
-          -1.0f, -1.0f,  1.0f,
+      glm::mat4 tempView = View;
 
-          -1.0f,  1.0f, -1.0f,
-          1.0f,  1.0f, -1.0f,
-          1.0f,  1.0f,  1.0f,
-          1.0f,  1.0f,  1.0f,
-          -1.0f,  1.0f,  1.0f,
-          -1.0f,  1.0f, -1.0f,
+      glUseProgram(skyboxProgramID);
+      glDepthMask(GL_FALSE);
+      glDisable(GL_CULL_FACE);
 
-          -1.0f, -1.0f, -1.0f,
-          -1.0f, -1.0f,  1.0f,
-          1.0f, -1.0f, -1.0f,
-          1.0f, -1.0f, -1.0f,
-          -1.0f, -1.0f,  1.0f,
-          1.0f, -1.0f,  1.0f };
+      View = glm::mat4(glm::mat3(View));
 
-        for (int i = 0; i < sizeof(points) / sizeof(float); i++)
-          points[i] *= size;
+      sendMatrix(skyboxProgramID);
+      glBindVertexArray(VAObuffer);
 
-        glGenVertexArrays(1, &VAObuffer);
-        glBindVertexArray(VAObuffer);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
-        // Bind Vertices Data to Buffer
-        glGenBuffers(1, &vertexVBO);
-        glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-        glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
 
-      }
+      glEnable(GL_CULL_FACE);
+      glDepthMask(GL_TRUE);
+      glUseProgram(programID);
 
-      void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
-        vector<const GLchar*> skyfaces;
-        skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
-        skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
-        skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
+      View = tempView;
+    }
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-        int width, height;
-        unsigned char *image;
-
-        for (GLuint i = 0; i < skyfaces.size(); i++) {
-          loadBMP_Data(skyfaces[i], image, width, height);
-          glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-        }
-
-        // format cube map texture
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-      }
-
-      void renderSkybox() {
-
-        GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
-        GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
-        GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
-        GLuint fogColorID = glGetUniformLocation(skyboxProgramID, "fogColorVec3");
-        glUniform1i(fogFlagID, fogFlag);
-        glUniform1f(fogDensityID, fogDensity);
-        glUniform1f(fogGradientID, fogGradient);
-        glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
-
-        glm::mat4 tempView = View;
-
-        glUseProgram(skyboxProgramID);
-        glDepthMask(GL_FALSE);
-        glDisable(GL_CULL_FACE);
-
-        View = glm::mat4(glm::mat3(View));
-
-        sendMatrix(skyboxProgramID);
-        glBindVertexArray(VAObuffer);
-
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-
-        glEnable(GL_CULL_FACE);
-        glDepthMask(GL_TRUE);
-        glUseProgram(programID);
-
-        View = tempView;
-      }
-
-    private:
-      GLuint skyboxTexture;
-      GLuint VAObuffer, vertexVBO;
-      GLsizei drawSize;
-      glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
+  private:
+    GLuint skyboxTexture;
+    GLuint VAObuffer, vertexVBO;
+    GLsizei drawSize;
+    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
 };
 
 class Earth : public Object {
@@ -492,12 +495,15 @@ void createRandomModel(glm::vec3 modelOrigin) {
 
 // Camera Matrix
 void eyeViewMatrix(GLint shaderProgramID) {
-	Projection = glm::perspective(glm::radians(45.0f), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 120.0f);
-	View = glm::lookAt(
-		glm::vec3(cameraPosition.x * cos(cameraPosAngle), cameraPosition.y, cameraPosition.z * sin(cameraPosAngle)), // Camera is at (x,y,z), in World Space
-		glm::vec3(0.0f, 0.0f, 0.0f), // and looks at point
-		glm::vec3(0.0f, 1.0f, 0.0f)  // Head is up (set to 0, -1, 0 to look upside-down)
-	);
+	Projection = glm::perspective(glm::radians(perspectiveAngle), (float)WINDOW_WIDTH / WINDOW_HEIGHT, 1.0f, 120.0f);
+  if(viewFlag == 0)
+    View = glm::lookAt(glm::vec3(cameraPosition.x * cos(cameraPosAngle), cameraPosition.y, cameraPosition.z * sin(cameraPosAngle)), // Camera is at (x,y,z), in World Space
+                      glm::vec3(0.0f, 0.0f, 0.0f),   // and looks at point
+                      glm::vec3(0.0f, 1.0f, 0.0f));  // Head is up (set to 0, -1, 0 to look upside-down)
+  else if(viewFlag == 2)
+    View = glm::lookAt(glm::vec3(0.0f, 30.0f, 1.0f), // Camera is at (x,y,z), in World Space
+											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
+											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat3 VM = glm::mat3(View * Model);
 	glm::mat4 pvm = Projection * View * Model;
@@ -642,7 +648,7 @@ void drawScreen() {
 	earth->sendMatrix(programID);
 	earth->renderObject();
 	glm::vec3 earthOrigin = earth->getEarthCentre();
-	// cout << "{" << earthOrigin.x << ", "  << earthOrigin.z << "}  " << orbitalTheta << endl;
+	cout << "{ " << cameraPosition.x << ", "  << cameraPosition.y << ", " << cameraPosition.z << " }" << endl;
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -656,7 +662,7 @@ void drawScreen() {
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
   lightControl(programID);
-  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.37f);
+  airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.52f);
   airplane->setOrigin(earthOrigin);
   // airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
   airplane->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta), orbitSize * sin(airplaneTheta)));
