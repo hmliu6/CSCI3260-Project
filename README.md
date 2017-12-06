@@ -31,7 +31,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 ### Bonus Features
 
 * [ ] Add another visible light source with Phong Illumination Model
-* [ ] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
+* [x] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [x] Provide extra viewpoints attached to space vehicles
 * [x] Real-time trajectory of space vehicle D with string
 * [ ] Asteroid ring cloud with more than 5000 random rocks around C (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)

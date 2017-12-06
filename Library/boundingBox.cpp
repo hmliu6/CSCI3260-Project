@@ -16,7 +16,7 @@ struct boundingBox{
 };
 
 bool collisionTest(boundingBox *objectA, boundingBox *objectB){
-    float thresold = 0.4f;
+    float thresold = 0.0f;
     // Case 1: object A is inside object B
     bool check = objectA->maxCubeVertex.x - thresold <= objectB->maxCubeVertex.x &&
                  objectA->maxCubeVertex.y - thresold <= objectB->maxCubeVertex.y &&
@@ -24,6 +24,33 @@ bool collisionTest(boundingBox *objectA, boundingBox *objectB){
                  objectA->minCubeVertex.x + thresold >= objectB->minCubeVertex.x &&
                  objectA->minCubeVertex.y + thresold >= objectB->minCubeVertex.y &&
                  objectA->minCubeVertex.z + thresold >= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
+
+    check = objectA->maxCubeVertex.x - thresold >= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y - thresold <= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z - thresold <= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x + thresold <= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y + thresold >= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z + thresold >= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
+
+    check = objectA->maxCubeVertex.x - thresold <= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y - thresold >= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z - thresold <= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x + thresold >= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y + thresold <= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z + thresold >= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
+
+    check = objectA->maxCubeVertex.x - thresold <= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y - thresold <= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z - thresold >= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x + thresold >= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y + thresold >= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z + thresold <= objectB->minCubeVertex.z;
     if(check == true)
         return true;
     
@@ -36,12 +63,48 @@ bool collisionTest(boundingBox *objectA, boundingBox *objectB){
             objectA->minCubeVertex.z - thresold <= objectB->minCubeVertex.z;
     if(check == true)
         return true;
+    
+    check = objectA->maxCubeVertex.x + thresold <= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y + thresold >= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z + thresold >= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x - thresold >= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y - thresold <= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z - thresold <= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
+    
+    check = objectA->maxCubeVertex.x + thresold >= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y + thresold <= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z + thresold >= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x - thresold <= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y - thresold >= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z - thresold <= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
+
+    check = objectA->maxCubeVertex.x + thresold >= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y + thresold >= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z + thresold <= objectB->maxCubeVertex.z &&
+            objectA->minCubeVertex.x - thresold <= objectB->minCubeVertex.x &&
+            objectA->minCubeVertex.y - thresold <= objectB->minCubeVertex.y &&
+            objectA->minCubeVertex.z - thresold >= objectB->minCubeVertex.z;
+    if(check == true)
+        return true;
 
     // Case 3: Partial collision, i.e. object A max is in between object B min and max
     check = objectA->maxCubeVertex.x + thresold >= objectB->minCubeVertex.x &&
             objectA->maxCubeVertex.y + thresold >= objectB->minCubeVertex.y &&
             objectA->maxCubeVertex.z + thresold >= objectB->minCubeVertex.z &&
             objectA->maxCubeVertex.x - thresold <= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y - thresold <= objectB->maxCubeVertex.y &&
+            objectA->maxCubeVertex.z - thresold <= objectB->maxCubeVertex.z;
+    if(check == true)
+        return true;
+    
+    check = objectA->maxCubeVertex.x + thresold >= objectB->minCubeVertex.x &&
+            objectA->maxCubeVertex.x - thresold <= objectB->maxCubeVertex.x &&
+            objectA->maxCubeVertex.y + thresold >= objectB->minCubeVertex.y &&
+            objectA->maxCubeVertex.z + thresold >= objectB->minCubeVertex.z &&
             objectA->maxCubeVertex.y - thresold <= objectB->maxCubeVertex.y &&
             objectA->maxCubeVertex.z - thresold <= objectB->maxCubeVertex.z;
     if(check == true)

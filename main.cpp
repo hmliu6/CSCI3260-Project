@@ -243,9 +243,9 @@ class Object {
 
     struct boundingBox * currentBox(){
       glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
-      tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
+      tempMin = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMin;
       glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
-      tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
+      tempMax = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMax;
       struct boundingBox *tempBox  = (struct boundingBox *)malloc(sizeof(struct boundingBox));
       tempBox->minCubeVertex = glm::vec3(tempMin.x, tempMin.y, tempMin.z);
       tempBox->maxCubeVertex = glm::vec3(tempMax.x, tempMax.y, tempMax.z);
@@ -424,6 +424,7 @@ class Airplane : public Object {
 
     // Scaling
     void setScale(glm::vec3 scale) {
+      tempScalingMatrix = glm::scale(glm::mat4(), scale);
       modelScalingMatrix = glm::scale(glm::mat4(), scale);
     }
 
@@ -726,6 +727,21 @@ void drawScreen() {
 	sun->sendMatrix(lightSourceProgramID);
   sun->renderObject();
 
+  // For displaying bounding box function
+  // glUseProgram(programID);
+  // eyeViewMatrix(programID);
+  // lightControl(programID);
+  // star->setScale(glm::vec3(0.7f, 0.7f, 0.7f));
+  // star->setOrigin(glm::vec3(0.0f, 0.0f, 0.0f));
+  // star->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+  // bool tempBound = collisionTest(sun->currentBox(), star->currentBox());
+  // struct boundingBox *temp = sun->currentBox();
+  // struct boundingBox *tempX = star->currentBox();
+  // if(!tempBound){
+  //   star->sendMatrix(programID);
+  //   star->renderObject();
+  // }
+
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
@@ -817,23 +833,6 @@ void drawScreen() {
       rock->renderObject();
     }
 	}
-
-  // For displaying bounding box function
-  // glUseProgram(programID);
-  // eyeViewMatrix(programID);
-  // lightControl(programID);
-  // star->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
-  // star->setOrigin(glm::vec3(0.0f, 0.0f, 0.0f));
-  // star->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
-  // bool tempBound = collisionTest(sun->currentBox(), star->currentBox());
-  // struct boundingBox *temp = sun->currentBox();
-  // struct boundingBox *tempX = star->currentBox();
-  // cout << "SUN: " << temp->minCubeVertex.x << ", " << temp->minCubeVertex.y << ", " << temp->minCubeVertex.z << ",   " << temp->maxCubeVertex.x << ", " << temp->maxCubeVertex.y << ", " << temp->maxCubeVertex.z << "}" << endl;
-  // cout << "STAR: " << tempX->minCubeVertex.x << ", " << tempX->minCubeVertex.y << ", " << tempX->minCubeVertex.z << ",   " << tempX->maxCubeVertex.x << ", " << tempX->maxCubeVertex.y << ", " << tempX->maxCubeVertex.z << "}" << endl;
-  // if(!tempBound){
-  //   star->sendMatrix(programID);
-  //   star->renderObject();
-  // }
 
 	// Order of sending matrices must NOT be changed
 	glUseProgram(skyboxProgramID);
