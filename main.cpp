@@ -54,6 +54,9 @@ int viewFlag = 0;
 // Parameters for controlling space vehicle
 float orbitSize = -9.0f, rotationSpeedConstant = 0.03f;
 
+// Parameters for controlling star
+float maxSize = 0.3f;
+
 class Object {
   public:
     // Class constructor
@@ -408,6 +411,13 @@ class Airplane : public Object {
       return headOrigin;
     }
 
+    glm::vec3 tailPosition(){
+      glm::vec3 tailOrigin = glm::vec3(0.0f, -60.0f, 0.0f);
+      glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(tailOrigin, 1.0f);
+      tailOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
+      return tailOrigin;
+    }
+
     glm::vec3 getGlobalOrigin() {
       glm::vec3 globalOrigin = glm::vec3(0.0f, 20.0f, -20.0f);
       glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
@@ -426,6 +436,7 @@ class positionArray{
       for(int i=0; i<size; i++)
         position[i] = glm::vec3(0.0f, 0.0f, 0.0f);
       element = 0;
+      loopCount = 0;
     }
 
     void pushElement(glm::vec3 inputVector){
@@ -456,9 +467,21 @@ class positionArray{
       return position[index];
     }
 
+    void updateLoopCount(){
+      loopCount += 1;
+    }
+
+    int getLoopCount(){
+      return loopCount;
+    }
+
+    void setLoopCount(int value){
+      loopCount = value;
+    }
+
   private:
     glm::vec3 *position;
-    int element;
+    int element, loopCount;
 };
 
 // Initialize class object pointer globally
@@ -470,7 +493,7 @@ Object *sun = nullptr;
 Object *saturn = nullptr;
 Object *moon = nullptr;
 Object *rock = nullptr;
-Object *star = nullptr;
+Airplane *star = nullptr;
 glm::vec3* rockTransformVec = new glm::vec3[NUMBER_OF_ROCK];
 glm::vec3* rockScaleVec = new glm::vec3[NUMBER_OF_ROCK];
 GLfloat* rockRotateTheta = new GLfloat[NUMBER_OF_ROCK];
@@ -642,6 +665,7 @@ void initOpenGL() {
 
 // Keep looping to draw on screen
 void drawScreen() {
+  flightTrack->updateLoopCount();
 	orbitalTheta += 0.01f;
 	moonTheta += 0.05f;
 	saturnAlpha += 0.044f;
@@ -715,10 +739,15 @@ void drawScreen() {
   sun->renderObject();
 
   glUseProgram(programID);
-	eyeViewMatrix(programID);
-	lightControl(programID);
-	star->sendMatrix(programID);
-	star->renderObject();
+  for(int i=1; i<STAR_TRACK_SIZE; i++){
+    eyeViewMatrix(programID);
+	  lightControl(programID);
+    star->setScale(glm::vec3(maxSize - i*0.1f*maxSize, maxSize - i*0.1f*maxSize, maxSize - i*0.1f*maxSize));
+    star->setOrigin(earthOrigin);
+    star->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta - i*0.3f), orbitSize * sin(airplaneTheta - i*0.3f)));
+    star->sendMatrix(programID);
+    star->renderObject();
+  }
 
 	// Order of sending matrices must NOT be changed
 	glUseProgram(skyboxProgramID);
@@ -727,7 +756,7 @@ void drawScreen() {
 
 	glutSwapBuffers();
 	glFlush();
-	glutPostRedisplay();
+  glutPostRedisplay();
 }
 
 int main(int argc, char *argv[]) {
@@ -751,9 +780,9 @@ int main(int argc, char *argv[]) {
 	saturn = new Object;
 	moon = new Object;
   rock = new Object;
-  star = new Object;
+  star = new Airplane;
 	background = new Skybox;
-  flightTrack = new positionArray(20);
+  flightTrack = new positionArray(STAR_TRACK_SIZE);
 
 	initOpenGL();
 	glutDisplayFunc(drawScreen);

@@ -33,7 +33,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Add another visible light source with Phong Illumination Model
 * [ ] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [x] Provide extra viewpoints attached to space vehicles
-* [ ] Real-time trajectory of space vehicle D with string (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
-* [ ] Asteroid ring cloud with more than 5000 random rocks around C
+* [x] Real-time trajectory of space vehicle D with string
+* [ ] Asteroid ring cloud with more than 5000 random rocks around C (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
 * [ ] Shadow mapping, Environment mapping, Displacement mapping
 * [ ] Background music with **IrrKlang** library
