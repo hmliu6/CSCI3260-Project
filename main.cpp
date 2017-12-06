@@ -55,7 +55,7 @@ int viewFlag = 0;
 float orbitSize = -9.0f, rotationSpeedConstant = 0.03f;
 
 // Parameters for controlling star
-float maxSize = 0.3f;
+float maxSize = 0.03f;
 
 class Object {
   public:
@@ -73,11 +73,28 @@ class Object {
       tempTransformMatrix = glm::mat4(1.0f);
       normalMapFlag = 0;
       secondTextureFlag = 0;
+      nearCoords = glm::vec3(0.0f);
+      farCoords = glm::vec3(0.0f);
+    }
+
+    // To check with xyz-near/far and update
+    void boundaryCheck(glm::vec3 input){
+      // Assume Near is always smaller than Far
+      nearCoords.x = (nearCoords.x > input.x) ? input.x : nearCoords.x;
+      nearCoords.y = (nearCoords.y > input.y) ? input.y : nearCoords.y;
+      nearCoords.z = (nearCoords.z > input.z) ? input.z : nearCoords.z;
+
+      farCoords.x = (farCoords.x < input.x) ? input.x : farCoords.x;
+      farCoords.y = (farCoords.y < input.y) ? input.y : farCoords.y;
+      farCoords.z = (farCoords.z < input.z) ? input.z : farCoords.z;
     }
 
     // Pass all object data to buffer
     void loadObjToBuffer(char * objectPath) {
       bool res = loadOBJ(objectPath, vertices, uvs, normals);
+
+      for(int i=0; i<vertices.size(); i++)
+        boundaryCheck(vertices[i]);
 
       glGenVertexArrays(1, &VAObuffer);
       glBindVertexArray(VAObuffer);
@@ -223,6 +240,8 @@ class Object {
 
     glm::mat4 modelMatrix;
     glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
+
+    glm::vec3 nearCoords, farCoords;
 };
 
 class Skybox : public Object {
@@ -742,7 +761,7 @@ void drawScreen() {
   for(int i=1; i<STAR_TRACK_SIZE; i++){
     eyeViewMatrix(programID);
 	  lightControl(programID);
-    star->setScale(glm::vec3(maxSize - i*0.1f*maxSize, maxSize - i*0.1f*maxSize, maxSize - i*0.1f*maxSize));
+    star->setScale(glm::vec3(maxSize*10 - i*0.01f*maxSize, maxSize*10 - i*0.01f*maxSize, maxSize*10 - i*0.01f*maxSize));
     star->setOrigin(earthOrigin);
     star->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta - i*0.3f), orbitSize * sin(airplaneTheta - i*0.3f)));
     star->sendMatrix(programID);
