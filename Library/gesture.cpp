@@ -28,14 +28,16 @@ void keyboardClick(unsigned char key, int x, int y){
   }
 	else if (key == 'o'){
 		zoomConstant += 1.0f;
+		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 		cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 	}else if (key == 'l'){
 		zoomConstant -= 1.0f;
+		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 		cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 	}else if (key == '1')
 		fogFlag = fogFlag ? 0 : 1;
 	else if (key == '2')
-		fogColor = fogColor == glm::vec3(0.5, 0.5,0.5) ? glm::vec3(0.5, 0.5,0.6) : glm::vec3(0.5, 0.5,0.5);
+		fogColor = fogColor == glm::vec3(0.5, 0.5, 0.5) ? glm::vec3(0.5, 0.5, 0.6) : glm::vec3(0.5, 0.5, 0.5);
   else if (key == 'q')
     exit(0);
 }
