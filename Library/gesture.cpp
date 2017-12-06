@@ -27,8 +27,6 @@ extern float orbitSize, rotationSpeedConstant;
 void keyboardClick(unsigned char key, int x, int y){
   if (key == ' ')
 	passiveMouseMode = !passiveMouseMode;
-  else if (key == 'a'){
-  }
 
 	// Zoom in/out Effect
 	else if (key == 'o'){
@@ -59,6 +57,11 @@ void keyboardClick(unsigned char key, int x, int y){
 		viewFlag = -1;
 	}
 	else if (key == 'f'){
+		// Viewpoint attached to airplane
+		perspectiveAngle = 75.0f;
+		viewFlag = 99;
+	}
+	else if (key == 'g'){
 		// Back to original viewpoint
 		perspectiveAngle = 45.0f;
 		viewFlag = 0;
@@ -105,11 +108,12 @@ void mouseWheelFunc(int button, int state, int x, int y){
 	printf("mouseWheelFunc: %i\n", state);
 	if ((button == 3) || (button == 4)) {
 		if (state == GLUT_UP) return;
-		if(button == 3)
+		if (button == 3)
 			zoomConstant -= 1.0f;
 		if (button == 4)
 			zoomConstant += 1.0f;
-	}else {
+	}
+	else {
 		if (button == 3)
 			zoomConstant -= 0.5f;
 		if (button == 4)

@@ -401,6 +401,20 @@ class Airplane : public Object {
       modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
     }
 
+    glm::vec3 headPosition(){
+      glm::vec3 headOrigin = glm::vec3(0.0f, 60.0f, 0.0f);
+      glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(headOrigin, 1.0f);
+      headOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
+      return headOrigin;
+    }
+
+    glm::vec3 getGlobalOrigin() {
+      glm::vec3 globalOrigin = glm::vec3(0.0f, 20.0f, -20.0f);
+      glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
+      globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
+      return globalOrigin;
+    }
+
   private:
     glm::vec3 origin;
 };
@@ -512,6 +526,13 @@ void eyeViewMatrix(GLint shaderProgramID) {
     View = glm::lookAt(glm::vec3(-50.0f, 0.0f, 0.0f), // Camera is at (x,y,z), in World Space
 											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
 											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
+  else if(viewFlag == 99){
+    glm::vec3 tempOrigin = airplane->getGlobalOrigin();
+    glm::vec3 tempHead = airplane->headPosition();
+    View = glm::lookAt(glm::vec3(tempOrigin.x, tempOrigin.y, tempOrigin.z), // Camera is at (x,y,z), in World Space
+											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
+											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
+  }
 	glm::mat4 Model = glm::mat4(1.0f);
 	glm::mat3 VM = glm::mat3(View * Model);
 	glm::mat4 pvm = Projection * View * Model;
