@@ -24,7 +24,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [x] 3 distinct viewpoints for choices, i.e. -X, +X, +Y axis
 * [X] Fog effect
 * [x] Graphical User Interface (need connect tot the actual function)
-* [ ] Keyboard Interactions, i.e. 'a', 's' and 'd' for switching viewpoints
+* [x] Keyboard Interactions, i.e. 'a', 's' and 'd' for switching viewpoints
 * [x] Speed and orbital control, i.e. &uarr; and &darr; for speed controlling, &larr; and &rarr; for changing orbit size of space vehicle D
 * [ ] Mouse Interaction, i.e. zoom in and out
 

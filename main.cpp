@@ -656,7 +656,7 @@ void drawScreen() {
 	earth->sendMatrix(programID);
 	earth->renderObject();
 	glm::vec3 earthOrigin = earth->getEarthCentre();
-	cout << "{ " << cameraPosition.x << ", "  << cameraPosition.y << ", " << cameraPosition.z << " }" << endl;
+	// cout << "{ " << cameraPosition.x << ", "  << cameraPosition.y << ", " << cameraPosition.z << " }" << endl;
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);

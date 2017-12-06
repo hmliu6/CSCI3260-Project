@@ -43,22 +43,22 @@ void keyboardClick(unsigned char key, int x, int y){
 	}
 	//
 
-	else if (key == ','){
+	else if (key == 'a'){
 		// Viewpoint at +Y axis
 		perspectiveAngle = 90.0f;
 		viewFlag = 2;
 	}
-	else if (key == '.'){
+	else if (key == 's'){
 		// Viewpoint at +X axis
 		perspectiveAngle = 45.0f;
 		viewFlag = 1;
 	}
-	else if (key == '/'){
+	else if (key == 'd'){
 		// Viewpoint at +X axis
 		perspectiveAngle = 45.0f;
 		viewFlag = -1;
 	}
-	else if (key == ';'){
+	else if (key == 'f'){
 		// Back to original viewpoint
 		perspectiveAngle = 45.0f;
 		viewFlag = 0;
