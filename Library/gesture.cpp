@@ -49,6 +49,16 @@ void keyboardClick(unsigned char key, int x, int y){
 		viewFlag = 2;
 	}
 	else if (key == '.'){
+		// Viewpoint at +X axis
+		perspectiveAngle = 45.0f;
+		viewFlag = 1;
+	}
+	else if (key == '/'){
+		// Viewpoint at +X axis
+		perspectiveAngle = 45.0f;
+		viewFlag = -1;
+	}
+	else if (key == ';'){
 		// Back to original viewpoint
 		perspectiveAngle = 45.0f;
 		viewFlag = 0;

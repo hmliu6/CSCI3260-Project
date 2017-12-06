@@ -220,7 +220,7 @@ class Object {
 
     glm::mat4 modelMatrix;
     glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
-  };
+};
 
 class Skybox : public Object {
   public:
@@ -502,6 +502,14 @@ void eyeViewMatrix(GLint shaderProgramID) {
                       glm::vec3(0.0f, 1.0f, 0.0f));  // Head is up (set to 0, -1, 0 to look upside-down)
   else if(viewFlag == 2)
     View = glm::lookAt(glm::vec3(0.0f, 30.0f, 1.0f), // Camera is at (x,y,z), in World Space
+											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
+											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
+  else if(viewFlag == 1)
+    View = glm::lookAt(glm::vec3(50.0f, 0.0f, 0.0f), // Camera is at (x,y,z), in World Space
+											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
+											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
+  else if(viewFlag == -1)
+    View = glm::lookAt(glm::vec3(-50.0f, 0.0f, 0.0f), // Camera is at (x,y,z), in World Space
 											 glm::vec3(0.0f, 0.0f, 0.0f),  // and looks at point
 											 glm::vec3(0.0f, 1.0f, 0.0f)); // Head is up (set to 0, -1, 0 to look upside-down)
 	glm::mat4 Model = glm::mat4(1.0f);
