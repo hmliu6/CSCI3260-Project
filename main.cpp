@@ -78,7 +78,7 @@ class Object {
     }
 
     // To check with xyz-near/far and update
-    void boundaryCheck(glm::vec3 input){
+    void getBoundaryBox(glm::vec3 input){
       // Assume Near is always smaller than Far
       nearCoords.x = (nearCoords.x > input.x) ? input.x : nearCoords.x;
       nearCoords.y = (nearCoords.y > input.y) ? input.y : nearCoords.y;
@@ -94,7 +94,7 @@ class Object {
       bool res = loadOBJ(objectPath, vertices, uvs, normals);
 
       for(int i=0; i<vertices.size(); i++)
-        boundaryCheck(vertices[i]);
+        getBoundaryBox(vertices[i]);
 
       glGenVertexArrays(1, &VAObuffer);
       glBindVertexArray(VAObuffer);
@@ -225,6 +225,18 @@ class Object {
         glUniform1i(TextureID2, 2);
       }
       glDrawArrays(GL_TRIANGLES, 0, drawSize);
+    }
+
+    glm::vec3 currentMinVertex(){
+      glm::vec4 tempMin = glm::vec4(nearCoords, 1.0f);
+      tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
+      return glm::vec3(tempMin.x, tempMin.y, tempMin.z);
+    }
+
+    glm::vec3 currentMaxVertex(){
+      glm::vec4 tempMax = glm::vec4(nearCoords, 1.0f);
+      tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
+      return glm::vec3(tempMax.x, tempMax.y, tempMax.z);
     }
 
   protected:
@@ -694,23 +706,12 @@ void drawScreen() {
 
 	lightPosition = sun->getGlobalOrigin();
 
-	// Standard step to draw one object
-	// eyeViewMatrix(programID);
-	// jeep->sendMatrix(programID);
-	// jeep->renderObject();
-  //
-
-	glUseProgram(programID);
-	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++) {
-		eyeViewMatrix(programID);
-		// rock->setModelMatrix(rockMatrices[i]);
-		rock->setScale(rockScaleVec[i]);
-		rock->setSelfRotate(glm::vec3(0.2f, 0.4f, 0.8f), rockRotateTheta[i]);
-		rock->setTransform(rockTransformVec[i]);
-		// rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
-		rock->sendMatrix(programID);
-		rock->renderObject();
-	}
+  glUseProgram(lightSourceProgramID);
+	eyeViewMatrix(lightSourceProgramID);
+	lightControl(lightSourceProgramID);
+	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
+	sun->sendMatrix(lightSourceProgramID);
+  sun->renderObject();
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -721,6 +722,14 @@ void drawScreen() {
 	earth->renderObject();
 	glm::vec3 earthOrigin = earth->getEarthCentre();
 	// cout << "{ " << cameraPosition.x << ", "  << cameraPosition.y << ", " << cameraPosition.z << " }" << endl;
+
+  glUseProgram(programID);
+	eyeViewMatrix(programID);
+	lightControl(programID);
+	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
+	// saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
+	saturn->sendMatrix(programID);
+	saturn->renderObject();
 
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
@@ -736,37 +745,32 @@ void drawScreen() {
   lightControl(programID);
   airplane->setSelfRotate(glm::vec3(1, 0, 0), 1.52f);
   airplane->setOrigin(earthOrigin);
-  // airplane->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
   airplane->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta), orbitSize * sin(airplaneTheta)));
 	airplane->sendMatrix(programID);
 	airplane->renderObject();
-  // cout << "{" << orbitSize << "}" << endl;
-
-	glUseProgram(programID);
-	eyeViewMatrix(programID);
-	lightControl(programID);
-	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
-	// saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
-	saturn->sendMatrix(programID);
-	saturn->renderObject();
-
-	glUseProgram(lightSourceProgramID);
-	eyeViewMatrix(lightSourceProgramID);
-	lightControl(lightSourceProgramID);
-	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
-	sun->sendMatrix(lightSourceProgramID);
-  sun->renderObject();
 
   glUseProgram(programID);
   for(int i=1; i<STAR_TRACK_SIZE; i++){
     eyeViewMatrix(programID);
 	  lightControl(programID);
-    star->setScale(glm::vec3(maxSize*10 - i*0.01f*maxSize, maxSize*10 - i*0.01f*maxSize, maxSize*10 - i*0.01f*maxSize));
+    star->setScale(glm::vec3(maxSize * (10-i), maxSize * (10-i), maxSize * (10-i)));
     star->setOrigin(earthOrigin);
     star->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta - i*0.3f), orbitSize * sin(airplaneTheta - i*0.3f)));
     star->sendMatrix(programID);
     star->renderObject();
   }
+
+  glUseProgram(programID);
+	for (GLuint i = 0; i < NUMBER_OF_ROCK; i++) {
+		eyeViewMatrix(programID);
+		// rock->setModelMatrix(rockMatrices[i]);
+		rock->setScale(rockScaleVec[i]);
+		rock->setSelfRotate(glm::vec3(0.2f, 0.4f, 0.8f), rockRotateTheta[i]);
+		rock->setTransform(rockTransformVec[i]);
+		// rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
+		rock->sendMatrix(programID);
+		rock->renderObject();
+	}
 
 	// Order of sending matrices must NOT be changed
 	glUseProgram(skyboxProgramID);
