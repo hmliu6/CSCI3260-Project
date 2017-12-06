@@ -23,6 +23,7 @@
 #include "Library/compute.hpp"
 #include "Library/cameraPosition.hpp"
 #include "Library/constant.hpp"
+#include "Library/boundingBox.hpp"
 
 using namespace std;
 
