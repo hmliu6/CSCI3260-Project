@@ -895,14 +895,11 @@ int main(int argc, char *argv[]) {
 	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
 	// For Windows
-	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+  // glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+  
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-
-
-
 	mainWindow = glutCreateWindow("CSCI3260 Project");
 	setupGLUI();
-
 
 	glewInit();
 
