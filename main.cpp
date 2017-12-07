@@ -61,474 +61,474 @@ float orbitSize = -9.0f, rotationSpeedConstant = 0.03f;
 float maxSize = 0.03f;
 
 class Object {
-public:
-	// Class constructor
-	Object() {
-		glGenBuffers(1, &VAObuffer);
-		glGenBuffers(1, &vertexVBO);
-		glGenBuffers(1, &uvVBO);
-		glGenBuffers(1, &normalVBO);
-		modelMatrix = glm::mat4(1.0f);
-		modelScalingMatrix = glm::mat4(1.0f);
-		modelTransformMatrix = glm::mat4(1.0f);
-		modelRotationMatrix = glm::mat4(1.0f);
-		tempScalingMatrix = glm::mat4(1.0f);
-		tempTransformMatrix = glm::mat4(1.0f);
-		normalMapFlag = 0;
-		secondTextureFlag = 0;
-		cubeCoords = (struct boundingBox *) malloc(sizeof(struct boundingBox));
-		cubeCoords->minCubeVertex = glm::vec3(0.0f);
-		cubeCoords->maxCubeVertex = glm::vec3(0.0f);
-	}
+  public:
+    // Class constructor
+    Object() {
+      glGenBuffers(1, &VAObuffer);
+      glGenBuffers(1, &vertexVBO);
+      glGenBuffers(1, &uvVBO);
+      glGenBuffers(1, &normalVBO);
+      modelMatrix = glm::mat4(1.0f);
+      modelScalingMatrix = glm::mat4(1.0f);
+      modelTransformMatrix = glm::mat4(1.0f);
+      modelRotationMatrix = glm::mat4(1.0f);
+      tempScalingMatrix = glm::mat4(1.0f);
+      tempTransformMatrix = glm::mat4(1.0f);
+      normalMapFlag = 0;
+      secondTextureFlag = 0;
+      cubeCoords = (struct boundingBox *) malloc(sizeof(struct boundingBox));
+      cubeCoords->minCubeVertex = glm::vec3(0.0f);
+      cubeCoords->maxCubeVertex = glm::vec3(0.0f);
+    }
 
-	// To check with xyz-near/far and update
-	void getBoundaryBox(glm::vec3 input) {
-		// Assume Near is always smaller than Far
-		cubeCoords->minCubeVertex.x = (cubeCoords->minCubeVertex.x > input.x) ? input.x : cubeCoords->minCubeVertex.x;
-		cubeCoords->minCubeVertex.y = (cubeCoords->minCubeVertex.y > input.y) ? input.y : cubeCoords->minCubeVertex.y;
-		cubeCoords->minCubeVertex.z = (cubeCoords->minCubeVertex.z > input.z) ? input.z : cubeCoords->minCubeVertex.z;
+    // To check with xyz-near/far and update
+    void getBoundaryBox(glm::vec3 input) {
+      // Assume Near is always smaller than Far
+      cubeCoords->minCubeVertex.x = (cubeCoords->minCubeVertex.x > input.x) ? input.x : cubeCoords->minCubeVertex.x;
+      cubeCoords->minCubeVertex.y = (cubeCoords->minCubeVertex.y > input.y) ? input.y : cubeCoords->minCubeVertex.y;
+      cubeCoords->minCubeVertex.z = (cubeCoords->minCubeVertex.z > input.z) ? input.z : cubeCoords->minCubeVertex.z;
 
-		cubeCoords->maxCubeVertex.x = (cubeCoords->maxCubeVertex.x < input.x) ? input.x : cubeCoords->maxCubeVertex.x;
-		cubeCoords->maxCubeVertex.y = (cubeCoords->maxCubeVertex.y < input.y) ? input.y : cubeCoords->maxCubeVertex.y;
-		cubeCoords->maxCubeVertex.z = (cubeCoords->maxCubeVertex.z < input.z) ? input.z : cubeCoords->maxCubeVertex.z;
-	}
+      cubeCoords->maxCubeVertex.x = (cubeCoords->maxCubeVertex.x < input.x) ? input.x : cubeCoords->maxCubeVertex.x;
+      cubeCoords->maxCubeVertex.y = (cubeCoords->maxCubeVertex.y < input.y) ? input.y : cubeCoords->maxCubeVertex.y;
+      cubeCoords->maxCubeVertex.z = (cubeCoords->maxCubeVertex.z < input.z) ? input.z : cubeCoords->maxCubeVertex.z;
+    }
 
-	// Pass all object data to buffer
-	void loadObjToBuffer(char * objectPath) {
-		bool res = loadOBJ(objectPath, vertices, uvs, normals);
+    // Pass all object data to buffer
+    void loadObjToBuffer(char * objectPath) {
+      bool res = loadOBJ(objectPath, vertices, uvs, normals);
 
-		for (int i = 0; i < vertices.size(); i++)
-			getBoundaryBox(vertices[i]);
+      for (int i = 0; i < vertices.size(); i++)
+        getBoundaryBox(vertices[i]);
 
-		glGenVertexArrays(1, &VAObuffer);
-		glBindVertexArray(VAObuffer);
+      glGenVertexArrays(1, &VAObuffer);
+      glBindVertexArray(VAObuffer);
 
-		// Bind Vertices Data to Buffer
-		glGenBuffers(1, &vertexVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      // Bind Vertices Data to Buffer
+      glGenBuffers(1, &vertexVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+      glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(glm::vec3), &vertices[0], GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-		// Bind UV Data to Buffer
-		glGenBuffers(1, &uvVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, uvVBO);
-		glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      // Bind UV Data to Buffer
+      glGenBuffers(1, &uvVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, uvVBO);
+      glBufferData(GL_ARRAY_BUFFER, uvs.size() * sizeof(glm::vec2), &uvs[0], GL_STATIC_DRAW);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-		// Bind Normal Data to Buffer
-		glGenBuffers(1, &normalVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
-		glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec2), &normals[0], GL_STATIC_DRAW);
-		glEnableVertexAttribArray(2);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+      // Bind Normal Data to Buffer
+      glGenBuffers(1, &normalVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, normalVBO);
+      glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec2), &normals[0], GL_STATIC_DRAW);
+      glEnableVertexAttribArray(2);
+      glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
 
-		drawSize = vertices.size();
-	}
+      drawSize = vertices.size();
+    }
 
-	// Pass all texture data to buffer
-	void loadTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-		objectTexture = loadBMPtoTexture(texturePath);
-		TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler_1");
-		// printf("Texture1 ID: %i \n", TextureID);
-	}
+    // Pass all texture data to buffer
+    void loadTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+      objectTexture = loadBMPtoTexture(texturePath);
+      TextureID = glGetUniformLocation(shaderProgramID, "myTextureSampler_1");
+      // printf("Texture1 ID: %i \n", TextureID);
+    }
 
-	// Pass normal texture map to buffer
-	void loadNormalTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-		objectNormalTexture = loadBMP_custom(texturePath);
-		NormalTextureID = glGetUniformLocation(shaderProgramID, "normalMap");
-		// printf("NormalTexture ID: %i \n", NormalTextureID);
-		normalMapFlag = 1;
-	}
+    // Pass normal texture map to buffer
+    void loadNormalTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+      objectNormalTexture = loadBMP_custom(texturePath);
+      NormalTextureID = glGetUniformLocation(shaderProgramID, "normalMap");
+      // printf("NormalTexture ID: %i \n", NormalTextureID);
+      normalMapFlag = 1;
+    }
 
-	// Pass all texture data to buffer
-	void loadSecondTextureToBuffer(char * texturePath, GLint shaderProgramID) {
-		objectTexture2 = loadBMPtoTexture(texturePath);
-		TextureID2 = glGetUniformLocation(shaderProgramID, "myTextureSampler_2");
-		// printf("Texture2 ID: %i \n", TextureID2);
-		secondTextureFlag = 1;
-	}
+    // Pass all texture data to buffer
+    void loadSecondTextureToBuffer(char * texturePath, GLint shaderProgramID) {
+      objectTexture2 = loadBMPtoTexture(texturePath);
+      TextureID2 = glGetUniformLocation(shaderProgramID, "myTextureSampler_2");
+      // printf("Texture2 ID: %i \n", TextureID2);
+      secondTextureFlag = 1;
+    }
 
-	glm::vec3 getGlobalOrigin() {
-		glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
-		glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
-		globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
-		return globalOrigin;
-	}
+    glm::vec3 getGlobalOrigin() {
+      glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
+      glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
+      globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
+      return globalOrigin;
+    }
 
-	// Model Matrix
-	void setModelMatrix(glm::mat4 _modelMatrix) {
-		modelMatrix = _modelMatrix;
-	}
+    // Model Matrix
+    void setModelMatrix(glm::mat4 _modelMatrix) {
+      modelMatrix = _modelMatrix;
+    }
 
-	// Scaling
-	void setScale(glm::vec3 scale) {
-		tempScalingMatrix = glm::scale(glm::mat4(), scale);
-		modelScalingMatrix = tempScalingMatrix;
-	}
+    // Scaling
+    void setScale(glm::vec3 scale) {
+      tempScalingMatrix = glm::scale(glm::mat4(), scale);
+      modelScalingMatrix = tempScalingMatrix;
+    }
 
-	void setOrigin(glm::vec3 origin) {
-		modelScalingMatrix = glm::translate(modelMatrix, origin) * tempScalingMatrix;
-	}
+    void setOrigin(glm::vec3 origin) {
+      modelScalingMatrix = glm::translate(modelMatrix, origin) * tempScalingMatrix;
+    }
 
-	// Rotation with self object space
-	void setSelfRotate(glm::vec3 axis, float thetaDegree) {
-		glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-		modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
-	}
+    // Rotation with self object space
+    void setSelfRotate(glm::vec3 axis, float thetaDegree) {
+      glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+    }
 
-	// Transformation
-	void setTransform(glm::vec3 transform) {
-		modelTransformMatrix = glm::translate(modelMatrix, transform);
-	}
+    // Transformation
+    void setTransform(glm::vec3 transform) {
+      modelTransformMatrix = glm::translate(modelMatrix, transform);
+    }
 
-	// Rotation
-	void setRotate(glm::vec3 axis, float thetaDegree) {
-		modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-	}
+    // Rotation
+    void setRotate(glm::vec3 axis, float thetaDegree) {
+      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+    }
 
-	// Passing all matrices to Shader
-	void sendMatrix(GLint shaderProgramID) {
-		GLint ScalingMatrixID = glGetUniformLocation(shaderProgramID, "ScalingMatrix");
-		GLint TransformMatrixID = glGetUniformLocation(shaderProgramID, "TransformMatrix");
-		GLint RotateMatrixID = glGetUniformLocation(shaderProgramID, "RotationMatrix");
+    // Passing all matrices to Shader
+    void sendMatrix(GLint shaderProgramID) {
+      GLint ScalingMatrixID = glGetUniformLocation(shaderProgramID, "ScalingMatrix");
+      GLint TransformMatrixID = glGetUniformLocation(shaderProgramID, "TransformMatrix");
+      GLint RotateMatrixID = glGetUniformLocation(shaderProgramID, "RotationMatrix");
 
-		glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
-		glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
-		glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
+      glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
+      glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
+      glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
 
-		GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
-		GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
-		glUniform1i(secondTextureFlagID, secondTextureFlag);
-		glUniform1i(normalMapFlagID, normalMapFlag);
-		GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
-		GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
-		GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
-		GLuint fogColorID = glGetUniformLocation(shaderProgramID, "fogColor");
-		glUniform1i(fogFlagID, fogFlag);
-		glUniform1f(fogDensityID, fogDensity);
-		glUniform1f(fogGradientID, fogGradient);
-		glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
-	}
+      GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
+      GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
+      glUniform1i(secondTextureFlagID, secondTextureFlag);
+      glUniform1i(normalMapFlagID, normalMapFlag);
+      GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
+      GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
+      GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
+      GLuint fogColorID = glGetUniformLocation(shaderProgramID, "fogColor");
+      glUniform1i(fogFlagID, fogFlag);
+      glUniform1f(fogDensityID, fogDensity);
+      glUniform1f(fogGradientID, fogGradient);
+      glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
+    }
 
-	// Bind object buffer and draw on screen
-	void renderObject() {
-		glBindVertexArray(VAObuffer);
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, objectTexture);
-		glUniform1i(TextureID, 0);
-		if (normalMapFlag == 1) {
-			glActiveTexture(GL_TEXTURE1);
-			glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
-			glUniform1i(NormalTextureID, 1);
-		}
-		if (secondTextureFlag == 1) {
-			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_2D, objectTexture2);
-			glUniform1i(TextureID2, 2);
-		}
-		glDrawArrays(GL_TRIANGLES, 0, drawSize);
-	}
+    // Bind object buffer and draw on screen
+    void renderObject() {
+      glBindVertexArray(VAObuffer);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, objectTexture);
+      glUniform1i(TextureID, 0);
+      if (normalMapFlag == 1) {
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_2D, objectNormalTexture);
+        glUniform1i(NormalTextureID, 1);
+      }
+      if (secondTextureFlag == 1) {
+        glActiveTexture(GL_TEXTURE2);
+        glBindTexture(GL_TEXTURE_2D, objectTexture2);
+        glUniform1i(TextureID2, 2);
+      }
+      glDrawArrays(GL_TRIANGLES, 0, drawSize);
+    }
 
-	glm::vec3 currentMinVertex() {
-		glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
-		tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
-		return glm::vec3(tempMin.x, tempMin.y, tempMin.z);
-	}
+    glm::vec3 currentMinVertex() {
+      glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
+      tempMin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMin;
+      return glm::vec3(tempMin.x, tempMin.y, tempMin.z);
+    }
 
-	glm::vec3 currentMaxVertex() {
-		glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
-		tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
-		return glm::vec3(tempMax.x, tempMax.y, tempMax.z);
-	}
+    glm::vec3 currentMaxVertex() {
+      glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
+      tempMax = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * tempMax;
+      return glm::vec3(tempMax.x, tempMax.y, tempMax.z);
+    }
 
-	struct boundingBox * currentBox() {
-		glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
-		tempMin = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMin;
-		glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
-		tempMax = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMax;
-		struct boundingBox *tempBox = (struct boundingBox *)malloc(sizeof(struct boundingBox));
-		tempBox->minCubeVertex = glm::vec3(tempMin.x, tempMin.y, tempMin.z);
-		tempBox->maxCubeVertex = glm::vec3(tempMax.x, tempMax.y, tempMax.z);
-		return tempBox;
-	}
+    struct boundingBox * currentBox() {
+      glm::vec4 tempMin = glm::vec4(cubeCoords->minCubeVertex, 1.0f);
+      tempMin = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMin;
+      glm::vec4 tempMax = glm::vec4(cubeCoords->maxCubeVertex, 1.0f);
+      tempMax = modelRotationMatrix * modelTransformMatrix * tempScalingMatrix * tempMax;
+      struct boundingBox *tempBox = (struct boundingBox *)malloc(sizeof(struct boundingBox));
+      tempBox->minCubeVertex = glm::vec3(tempMin.x, tempMin.y, tempMin.z);
+      tempBox->maxCubeVertex = glm::vec3(tempMax.x, tempMax.y, tempMax.z);
+      return tempBox;
+    }
 
-protected:
-	// Put all variables declaration here
-	GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
-	GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
-	GLushort normalMapFlag, secondTextureFlag;
+  protected:
+    // Put all variables declaration here
+    GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
+    GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
+    GLushort normalMapFlag, secondTextureFlag;
 
-	GLsizei drawSize;
+    GLsizei drawSize;
 
-	std::vector <glm::vec3> vertices, normals;
-	std::vector <glm::vec2> uvs;
+    std::vector <glm::vec3> vertices, normals;
+    std::vector <glm::vec2> uvs;
 
-	glm::mat4 modelMatrix;
-	glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
+    glm::mat4 modelMatrix;
+    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix, tempScalingMatrix, tempTransformMatrix;
 
-	struct boundingBox *cubeCoords;
+    struct boundingBox *cubeCoords;
 };
 
 class Skybox : public Object {
-public:
-	// Class constructor
-	Skybox() {
-		glGenBuffers(1, &VAObuffer);
-		glGenBuffers(1, &vertexVBO);
-		glGenTextures(1, &skyboxTexture);
-		modelScalingMatrix = glm::mat4(1.0f);
-		modelTransformMatrix = glm::mat4(1.0f);
-		modelRotationMatrix = glm::mat4(1.0f);
-	}
+  public:
+    // Class constructor
+    Skybox() {
+      glGenBuffers(1, &VAObuffer);
+      glGenBuffers(1, &vertexVBO);
+      glGenTextures(1, &skyboxTexture);
+      modelScalingMatrix = glm::mat4(1.0f);
+      modelTransformMatrix = glm::mat4(1.0f);
+      modelRotationMatrix = glm::mat4(1.0f);
+    }
 
-	void loadVerticesToBuffer(float size) {
-		GLfloat points[] = {
-			// positions
-			-1.0f,  1.0f, -1.0f,
-			-1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-			1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
+    void loadVerticesToBuffer(float size) {
+      GLfloat points[] = {
+        // positions
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-			-1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f, -1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-			1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
 
-			-1.0f, -1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			1.0f, -1.0f,  1.0f,
-			-1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-			-1.0f,  1.0f, -1.0f,
-			1.0f,  1.0f, -1.0f,
-			1.0f,  1.0f,  1.0f,
-			1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f,  1.0f,
-			-1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f, -1.0f,
+        1.0f,  1.0f,  1.0f,
+        1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-			-1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			1.0f, -1.0f, -1.0f,
-			1.0f, -1.0f, -1.0f,
-			-1.0f, -1.0f,  1.0f,
-			1.0f, -1.0f,  1.0f };
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f, -1.0f,
+        1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+        1.0f, -1.0f,  1.0f };
 
-		for (int i = 0; i < sizeof(points) / sizeof(float); i++)
-			points[i] *= size;
+      for (int i = 0; i < sizeof(points) / sizeof(float); i++)
+        points[i] *= size;
 
-		glGenVertexArrays(1, &VAObuffer);
-		glBindVertexArray(VAObuffer);
+      glGenVertexArrays(1, &VAObuffer);
+      glBindVertexArray(VAObuffer);
 
-		// Bind Vertices Data to Buffer
-		glGenBuffers(1, &vertexVBO);
-		glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
+      // Bind Vertices Data to Buffer
+      glGenBuffers(1, &vertexVBO);
+      glBindBuffer(GL_ARRAY_BUFFER, vertexVBO);
+      glBufferData(GL_ARRAY_BUFFER, sizeof(points), &points, GL_STATIC_DRAW);
+      glEnableVertexAttribArray(0);
+      glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), 0);
 
-	}
+    }
 
-	void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
-		vector<const GLchar*> skyfaces;
-		skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
-		skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
-		skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
+    void create_cube_map(const char* frontPath, const char* backPath, const char* topPath, const char* bottomPath, const char* leftPath, const char* rightPath) {
+      vector<const GLchar*> skyfaces;
+      skyfaces.push_back(rightPath);  skyfaces.push_back(leftPath);
+      skyfaces.push_back(bottomPath); skyfaces.push_back(topPath);
+      skyfaces.push_back(backPath);   skyfaces.push_back(frontPath);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
-		int width, height;
-		unsigned char *image;
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+      int width, height;
+      unsigned char *image;
 
-		for (GLuint i = 0; i < skyfaces.size(); i++) {
-			loadBMP_Data(skyfaces[i], image, width, height);
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
-		}
+      for (GLuint i = 0; i < skyfaces.size(); i++) {
+        loadBMP_Data(skyfaces[i], image, width, height);
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, image);
+      }
 
-		// format cube map texture
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-	}
+      // format cube map texture
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+      glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+    }
 
-	void renderSkybox() {
+    void renderSkybox() {
 
-		GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
-		GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
-		GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
-		GLuint fogColorID = glGetUniformLocation(skyboxProgramID, "fogColorVec3");
-		glUniform1i(fogFlagID, fogFlag);
-		glUniform1f(fogDensityID, fogDensity);
-		glUniform1f(fogGradientID, fogGradient);
-		glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
+      GLuint fogFlagID = glGetUniformLocation(skyboxProgramID, "fogFlag");
+      GLuint fogDensityID = glGetUniformLocation(skyboxProgramID, "fogDensity");
+      GLuint fogGradientID = glGetUniformLocation(skyboxProgramID, "fogGradient");
+      GLuint fogColorID = glGetUniformLocation(skyboxProgramID, "fogColorVec3");
+      glUniform1i(fogFlagID, fogFlag);
+      glUniform1f(fogDensityID, fogDensity);
+      glUniform1f(fogGradientID, fogGradient);
+      glUniform3f(fogColorID, fogColor[0], fogColor[1], fogColor[2]);
 
-		glm::mat4 tempView = View;
+      glm::mat4 tempView = View;
 
-		glUseProgram(skyboxProgramID);
-		glDepthMask(GL_FALSE);
-		glDisable(GL_CULL_FACE);
+      glUseProgram(skyboxProgramID);
+      glDepthMask(GL_FALSE);
+      glDisable(GL_CULL_FACE);
 
-		View = glm::mat4(glm::mat3(View));
+      View = glm::mat4(glm::mat3(View));
 
-		sendMatrix(skyboxProgramID);
-		glBindVertexArray(VAObuffer);
+      sendMatrix(skyboxProgramID);
+      glBindVertexArray(VAObuffer);
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_CUBE_MAP, skyboxTexture);
 
-		glDrawArrays(GL_TRIANGLES, 0, 36);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
 
-		glEnable(GL_CULL_FACE);
-		glDepthMask(GL_TRUE);
-		glUseProgram(programID);
+      glEnable(GL_CULL_FACE);
+      glDepthMask(GL_TRUE);
+      glUseProgram(programID);
 
-		View = tempView;
-	}
+      View = tempView;
+    }
 
-private:
-	GLuint skyboxTexture;
-	GLuint VAObuffer, vertexVBO;
-	GLsizei drawSize;
-	glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
+  private:
+    GLuint skyboxTexture;
+    GLuint VAObuffer, vertexVBO;
+    GLsizei drawSize;
+    glm::mat4 modelScalingMatrix, modelTransformMatrix, modelRotationMatrix;
 };
 
 class Earth : public Object {
-public:
-	Earth() : Object() {}
+  public:
+    Earth() : Object() {}
 
-	glm::vec3 getEarthCentre() {
-		glm::vec4 origin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		glm::vec4 movedOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * origin;
-		return glm::vec3(movedOrigin);
-	}
+    glm::vec3 getEarthCentre() {
+      glm::vec4 origin = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+      glm::vec4 movedOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * origin;
+      return glm::vec3(movedOrigin);
+    }
 };
 
 class Airplane : public Object {
-public:
-	Airplane() : Object() {}
+  public:
+    Airplane() : Object() {}
 
-	// Scaling
-	void setScale(glm::vec3 scale) {
-		tempScalingMatrix = glm::scale(glm::mat4(), scale);
-		modelScalingMatrix = glm::scale(glm::mat4(), scale);
-	}
+    // Scaling
+    void setScale(glm::vec3 scale) {
+      tempScalingMatrix = glm::scale(glm::mat4(), scale);
+      modelScalingMatrix = glm::scale(glm::mat4(), scale);
+    }
 
-	void setOrigin(glm::vec3 inputOrigin) {
-		// modelScalingMatrix = glm::translate(modelMatrix, inputOrigin) * tempScalingMatrix;
-		origin = inputOrigin;
-	}
+    void setOrigin(glm::vec3 inputOrigin) {
+      // modelScalingMatrix = glm::translate(modelMatrix, inputOrigin) * tempScalingMatrix;
+      origin = inputOrigin;
+    }
 
-	// Rotation with self object space
-	void setSelfRotate(glm::vec3 axis, float thetaDegree) {
-		glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-		modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
-	}
+    // Rotation with self object space
+    void setSelfRotate(glm::vec3 axis, float thetaDegree) {
+      glm::mat4 selfRotateMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+      modelScalingMatrix = selfRotateMatrix * modelScalingMatrix;
+    }
 
-	// Transformation
-	void setTransform(glm::vec3 transform) {
-		modelTransformMatrix = glm::translate(modelMatrix, transform) * glm::translate(modelMatrix, origin);
-	}
+    // Transformation
+    void setTransform(glm::vec3 transform) {
+      modelTransformMatrix = glm::translate(modelMatrix, transform) * glm::translate(modelMatrix, origin);
+    }
 
-	// Rotation
-	void setRotate(glm::vec3 axis, float thetaDegree) {
-		modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
-	}
+    // Rotation
+    void setRotate(glm::vec3 axis, float thetaDegree) {
+      modelRotationMatrix = glm::rotate(glm::mat4(), glm::radians(thetaDegree), axis);
+    }
 
-	glm::vec3 headPosition() {
-		glm::vec3 headOrigin = glm::vec3(0.0f, 60.0f, 0.0f);
-		glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(headOrigin, 1.0f);
-		headOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
-		return headOrigin;
-	}
+    glm::vec3 headPosition() {
+      glm::vec3 headOrigin = glm::vec3(0.0f, 60.0f, 0.0f);
+      glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(headOrigin, 1.0f);
+      headOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
+      return headOrigin;
+    }
 
-	glm::vec3 tailPosition() {
-		glm::vec3 tailOrigin = glm::vec3(0.0f, -60.0f, 0.0f);
-		glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(tailOrigin, 1.0f);
-		tailOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
-		return tailOrigin;
-	}
+    glm::vec3 tailPosition() {
+      glm::vec3 tailOrigin = glm::vec3(0.0f, -60.0f, 0.0f);
+      glm::vec4 tempHeadOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(tailOrigin, 1.0f);
+      tailOrigin = glm::vec3(tempHeadOrigin.x, tempHeadOrigin.y, tempHeadOrigin.z);
+      return tailOrigin;
+    }
 
-	glm::vec3 getGlobalOrigin() {
-		glm::vec3 globalOrigin = glm::vec3(0.0f, 20.0f, -20.0f);
-		glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
-		globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
-		return globalOrigin;
-	}
+    glm::vec3 getGlobalOrigin() {
+      glm::vec3 globalOrigin = glm::vec3(0.0f, 20.0f, -20.0f);
+      glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
+      globalOrigin = glm::vec3(tempGlobalOrigin.x, tempGlobalOrigin.y, tempGlobalOrigin.z);
+      return globalOrigin;
+    }
 
-private:
-	glm::vec3 origin;
+  private:
+    glm::vec3 origin;
 };
 
 class positionArray {
-public:
-	positionArray(int size) {
-		position = (glm::vec3*) malloc(sizeof(glm::vec3) * size);
-		for (int i = 0; i < size; i++)
-			position[i] = glm::vec3(0.0f, 0.0f, 0.0f);
-		element = 0;
-		loopCount = 0;
-	}
+  public:
+    positionArray(int size) {
+      position = (glm::vec3*) malloc(sizeof(glm::vec3) * size);
+      for (int i = 0; i < size; i++)
+        position[i] = glm::vec3(0.0f, 0.0f, 0.0f);
+      element = 0;
+      loopCount = 0;
+    }
 
-	void pushElement(glm::vec3 inputVector) {
-		position[element] = inputVector;
-		element += 1;
-	}
+    void pushElement(glm::vec3 inputVector) {
+      position[element] = inputVector;
+      element += 1;
+    }
 
-	glm::vec3 popElement() {
-		glm::vec3 tempVector = position[0];
-		if (element == 1) {
-			element -= 1;
-			position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
-		}
-		else {
-			for (int i = 1; i < element; i++)
-				position[i] = position[i - 1];
-			element -= 1;
-			position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
-		}
-		return tempVector;
-	}
+    glm::vec3 popElement() {
+      glm::vec3 tempVector = position[0];
+      if (element == 1) {
+        element -= 1;
+        position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
+      }
+      else {
+        for (int i = 1; i < element; i++)
+          position[i] = position[i - 1];
+        element -= 1;
+        position[element] = glm::vec3(0.0f, 0.0f, 0.0f);
+      }
+      return tempVector;
+    }
 
-	int countElement() {
-		return element;
-	}
+    int countElement() {
+      return element;
+    }
 
-	glm::vec3 getElement(int index) {
-		return position[index];
-	}
+    glm::vec3 getElement(int index) {
+      return position[index];
+    }
 
-	void updateLoopCount() {
-		loopCount += 1;
-	}
+    void updateLoopCount() {
+      loopCount += 1;
+    }
 
-	int getLoopCount() {
-		return loopCount;
-	}
+    int getLoopCount() {
+      return loopCount;
+    }
 
-	void setLoopCount(int value) {
-		loopCount = value;
-	}
+    void setLoopCount(int value) {
+      loopCount = value;
+    }
 
-private:
-	glm::vec3 *position;
-	int element, loopCount;
+  private:
+    glm::vec3 *position;
+    int element, loopCount;
 };
 
 // Initialize class object pointer globally
@@ -730,7 +730,8 @@ void drawScreen() {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	lightPosition_1 = sun->getGlobalOrigin();
+  lightPosition_1 = sun->getGlobalOrigin();
+  lightPosition_2 = lightedPlanet->getGlobalOrigin();
 
 	glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
@@ -739,7 +740,6 @@ void drawScreen() {
 	sun->sendMatrix(lightSourceProgramID);
 	sun->renderObject();
 
-	lightPosition_2 = lightedPlanet->getGlobalOrigin();
 	glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
 	lightControl(lightSourceProgramID);
@@ -768,7 +768,8 @@ void drawScreen() {
 	lightControl(programID);
 	earth->setSelfRotate(glm::vec3(0, 1, 0), 0.3);
 	earth->setTransform(glm::vec3(20.0f * cos(orbitalTheta), -1.5f, 16.0f * sin(orbitalTheta)));
-	bool earthBound = collisionTest(sun->currentBox(), earth->currentBox());
+  bool earthBound = collisionTest(sun->currentBox(), earth->currentBox()) &&
+                    collisionTest(lightedPlanet->currentBox(), earth->currentBox());
 	if (!earthBound) {
 		earth->sendMatrix(programID);
 		earth->renderObject();
@@ -779,8 +780,9 @@ void drawScreen() {
 	glUseProgram(programID);
 	eyeViewMatrix(programID);
 	lightControl(programID);
-	saturn->setSelfRotate(glm::vec3(0, 1, 0), -0.2);
-	// saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
+	saturn->setSelfRotate(glm::vec3(0, 1, 0), -1.0f);
+  // saturn->setTransform(glm::vec3(-20.0f * cos(orbitalTheta), 7.0f, 12.0f * sin(orbitalTheta)));
+  saturn->setRotate(glm::vec3(0.0f, 1.0f, 0.0f), airplaneTheta);
 	bool saturnBound = collisionTest(sun->currentBox(), saturn->currentBox()) &&
 		collisionTest(earth->currentBox(), saturn->currentBox());
 	if (!saturnBound) {
@@ -795,8 +797,9 @@ void drawScreen() {
 	moon->setSelfRotate(glm::vec3(0, 1, 0), -0.4f);
 	moon->setTransform(glm::vec3(7.0f * cos(moonTheta), 7.0f * cos(moonTheta), 7.0f * sin(moonTheta)));
 	bool moonBound = collisionTest(sun->currentBox(), moon->currentBox()) &&
-		collisionTest(earth->currentBox(), moon->currentBox()) &&
-		collisionTest(saturn->currentBox(), moon->currentBox());
+		               collisionTest(earth->currentBox(), moon->currentBox()) &&
+		               collisionTest(saturn->currentBox(), moon->currentBox()) &&
+                   collisionTest(lightedPlanet->currentBox(), moon->currentBox());
 	if (!moonBound) {
 		moon->sendMatrix(programID);
 		moon->renderObject();
@@ -809,9 +812,10 @@ void drawScreen() {
 	airplane->setOrigin(earthOrigin);
 	airplane->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta), orbitSize * sin(airplaneTheta)));
 	bool airplaneBound = collisionTest(sun->currentBox(), airplane->currentBox()) &&
-		collisionTest(earth->currentBox(), airplane->currentBox()) &&
-		collisionTest(saturn->currentBox(), airplane->currentBox()) &&
-		collisionTest(moon->currentBox(), airplane->currentBox());
+                       collisionTest(earth->currentBox(), airplane->currentBox()) &&
+                       collisionTest(saturn->currentBox(), airplane->currentBox()) &&
+                       collisionTest(moon->currentBox(), airplane->currentBox()) &&
+                       collisionTest(lightedPlanet->currentBox(), airplane->currentBox());
 	if (!airplaneBound) {
 		airplane->sendMatrix(programID);
 		airplane->renderObject();
@@ -820,15 +824,18 @@ void drawScreen() {
 	glUseProgram(programID);
 	for (int i = 1; i < STAR_TRACK_SIZE; i++) {
 		eyeViewMatrix(programID);
-		lightControl(programID);
-		star->setScale(glm::vec3(maxSize * (10 - i), maxSize * (10 - i), maxSize * (10 - i)));
+    lightControl(programID);
+    float displaySize = glm::clamp(maxSize, 0.0f, 0.06f);
+    cout << displaySize << endl;
+		star->setScale(glm::vec3(displaySize * (10 - i), displaySize * (10 - i), displaySize * (10 - i)));
 		star->setOrigin(earthOrigin);
 		star->setTransform(glm::vec3(0.0f, orbitSize * cos(airplaneTheta - i*0.3f), orbitSize * sin(airplaneTheta - i*0.3f)));
 		bool starBound = collisionTest(sun->currentBox(), star->currentBox()) &&
-			collisionTest(earth->currentBox(), star->currentBox()) &&
-			collisionTest(saturn->currentBox(), star->currentBox()) &&
-			collisionTest(moon->currentBox(), star->currentBox()) &&
-			collisionTest(airplane->currentBox(), star->currentBox());
+                     collisionTest(earth->currentBox(), star->currentBox()) &&
+                     collisionTest(saturn->currentBox(), star->currentBox()) &&
+                     collisionTest(moon->currentBox(), star->currentBox()) &&
+                     collisionTest(airplane->currentBox(), star->currentBox()) &&
+                     collisionTest(lightedPlanet->currentBox(), star->currentBox());
 		if (!starBound) {
 			star->sendMatrix(programID);
 			star->renderObject();
@@ -842,13 +849,14 @@ void drawScreen() {
 		rock->setScale(rockScaleVec[i]);
 		rock->setSelfRotate(glm::vec3(0.2f, 0.4f, 0.8f), rockRotateTheta[i]);
 		rock->setTransform(rockTransformVec[i]);
-		// rock->setTransform(glm::vec3(1.5f, 1.0f, 1.5f));
+		rock->setRotate(glm::vec3(0.0f, 1.0f, 0.0f), airplaneTheta);
 		bool rockBound = collisionTest(sun->currentBox(), rock->currentBox()) &&
-			collisionTest(earth->currentBox(), rock->currentBox()) &&
-			collisionTest(saturn->currentBox(), rock->currentBox()) &&
-			collisionTest(moon->currentBox(), rock->currentBox()) &&
-			collisionTest(airplane->currentBox(), rock->currentBox()) &&
-			collisionTest(star->currentBox(), rock->currentBox());
+                     collisionTest(earth->currentBox(), rock->currentBox()) &&
+                     collisionTest(saturn->currentBox(), rock->currentBox()) &&
+                     collisionTest(moon->currentBox(), rock->currentBox()) &&
+                     collisionTest(airplane->currentBox(), rock->currentBox()) &&
+                     collisionTest(star->currentBox(), rock->currentBox()) &&
+                     collisionTest(lightedPlanet->currentBox(), rock->currentBox());
 		if (!rockBound) {
 			rock->sendMatrix(programID);
 			rock->renderObject();
@@ -869,10 +877,10 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
 	// For Mac OS
-	//glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
 	// For Windows
-	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 	glutCreateWindow("CSCI3260 Project");
