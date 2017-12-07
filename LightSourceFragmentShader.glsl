@@ -21,7 +21,7 @@ uniform float fogGradient;
 uniform vec3 fogColor;
 
 vec3 diffuseLight, ambientLight, specularLight;
-float ambientCoefficient = 2.7f;
+float ambientCoefficient = 2.3f;
 
 
 void main(){
