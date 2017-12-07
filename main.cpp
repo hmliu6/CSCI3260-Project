@@ -48,6 +48,8 @@ float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta =
 
 // Parameter for switch on fog
 int fogFlag = 1;
+// Colour Flag = 1 for blue colour
+int fogColorFlag = 0;
 float fogDensity = 0.017f;
 float fogGradient = 3.5f;
 glm::vec3 fogColor = glm::vec3(0.5, 0.5, 0.5);
@@ -66,10 +68,11 @@ float perspectiveAngle = 45.0f;
 int viewFlag = 0;
 
 // Parameters for controlling space vehicle
-float orbitSize = -9.0f, rotationSpeedConstant = 0.03f;
+float orbitSize = -9.0f, rotationSpeedConstant = 3.0f;
 
 // Parameters for controlling star
 float maxSize = 0.03f;
+int trajectoryDisplay = 1;
 
 class Object {
   public:
@@ -740,7 +743,8 @@ void drawScreen() {
 	orbitalTheta += 0.01f;
 	moonTheta += 0.05f;
 	saturnAlpha += 0.044f;
-	airplaneTheta += rotationSpeedConstant;
+	airplaneTheta += rotationSpeedConstant / 100.0f;
+  maxSize = rotationSpeedConstant / 100.0f;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -850,7 +854,7 @@ void drawScreen() {
                      collisionTest(moon->currentBox(), star->currentBox()) &&
                      collisionTest(airplane->currentBox(), star->currentBox()) &&
                      collisionTest(lightedPlanet->currentBox(), star->currentBox());
-		if (!starBound) {
+		if (!starBound && trajectoryDisplay == 1) {
 			star->sendMatrix(programID);
 			star->renderObject();
 		}

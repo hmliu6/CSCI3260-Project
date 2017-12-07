@@ -23,15 +23,15 @@ enum
 
 int moveFlag = 0;
 int normalMapFlag = 0;
-int trajectoryFlag = 0;
+extern int trajectoryDisplay;
 
 
 int listbox_item_id = 12;	//  Id of the selected item in the list box
 int radiogroup_item_id = 0; //  Id of the selcted radio button
-float speed = 1;			//  Spinner Speed Live Variable
 
 
-extern int fogFlag;
+extern int fogFlag, fogColorFlag;
+extern float rotationSpeedConstant;
 
 
 void myGlutReshape(int w, int h) {
@@ -92,7 +92,7 @@ void glui_callback(int control_id)
 
 
 	case SPEED_SPINNER:
-		printf("Speed of vehicle : %f.\n", speed);
+		printf("Speed of vehicle : %f.\n", rotationSpeedConstant);
 
 		break;
 
@@ -105,7 +105,7 @@ void glui_callback(int control_id)
 	case INFO_BUTTON:
 		printf("Move Flag : %i\n", moveFlag);
 		printf("Normal Flag : %i\n", normalMapFlag);
-		printf("Trajectory Flag : %i\n", trajectoryFlag);
+		printf("Trajectory Flag : %i\n", trajectoryDisplay);
 		printf("Fog Flag : %i\n", fogFlag);
 
 		break;
@@ -131,8 +131,6 @@ void setupGLUI()
 	GLUI_Master.set_glutMouseFunc(NULL);
 
 	GLUI *glui = GLUI_Master.create_glui("Panel");
-
-
 	// GLUI *glui = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_RIGHT);
 
 	glui->set_main_gfx_window(mainWindow);
@@ -141,7 +139,7 @@ void setupGLUI()
 
 	GLUI_Panel *vehicle_panel = glui->add_panel("Vehicle Panel");
 
-	GLUI_Spinner *spinner = glui->add_spinner_to_panel(vehicle_panel, "Speed", GLUI_SPINNER_FLOAT, &speed, SPEED_SPINNER, glui_callback);
+	GLUI_Spinner *spinner = glui->add_spinner_to_panel(vehicle_panel, "Speed", GLUI_SPINNER_FLOAT, &rotationSpeedConstant, SPEED_SPINNER, glui_callback);
 
 	glui->add_separator();
 
@@ -154,7 +152,7 @@ void setupGLUI()
 
 	glui->add_checkbox_to_panel(move_panel, "Normal Map", &normalMapFlag);
 
-	glui->add_checkbox_to_panel(move_panel, "Trajectory", &trajectoryFlag);
+	glui->add_checkbox_to_panel(move_panel, "Trajectory", &trajectoryDisplay);
 
 	glui->add_column_to_panel(op_panel, true);
 
