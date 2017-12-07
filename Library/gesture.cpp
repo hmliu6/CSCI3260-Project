@@ -107,8 +107,8 @@ void mouseCoordinate(int x, int y){
 }
 
 void mouseWheelFunc(int button, int state, int x, int y){
-	printf("mouseWheelFunc: %i\n", state);
-	printf("mouseWheelFuncx: %i  y: %\n", x, y);
+	printf("mouseWheelFunc: %d\n", state);
+	// printf("mouseWheelFuncx: %d  y: %d\n", x, y);
 	if ((button == 3) || (button == 4)) {
 		if (state == GLUT_UP) return;
 		if (button == 3)
