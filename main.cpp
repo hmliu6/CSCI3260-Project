@@ -1,9 +1,11 @@
 #ifdef __APPLE__
-#include <GL/glew.h>
-#include <GLUT/glut.h>
+  #include <GL/glew.h>
+  #include <GLUT/glut.h>
+  #include <GL/glui.h>
 #elif defined _WIN32 || defined _WIN64
-#include "Library/Dependencies/glew/glew.h"
-#include "Library/Dependencies/freeglut/freeglut.h"
+  #include "Library/Dependencies/glew/glew.h"
+  #include "Library/Dependencies/freeglut/freeglut.h"
+  #include "Library/Dependencies/glui/glui.h"
 #endif
 #include <stdlib.h>
 #include <math.h>
@@ -11,6 +13,7 @@
 #include "Library/Dependencies/glm/gtc/matrix_transform.hpp"
 #include "Library/Dependencies/glm/gtx/rotate_vector.hpp"
 #include "Library/Dependencies/glm/gtx/vector_angle.hpp"
+
 
 #include <iostream>
 #include <vector>
@@ -24,11 +27,18 @@
 #include "Library/cameraPosition.hpp"
 #include "Library/constant.hpp"
 #include "Library/boundingBox.hpp"
+#include "Library/guiFunction.hpp"
 
 using namespace std;
 
 
 #define PI 3.14159265
+
+// GUI property
+GLuint mainWindow;
+
+int windowWidth = WINDOW_WIDTH;
+int windowHieght = WINDOW_HEIGHT;
 
 // ProgramID passed from installShaders()
 GLint programID, skyboxProgramID, lightSourceProgramID;
@@ -46,6 +56,7 @@ glm::vec3 fogColor = glm::vec3(0.5, 0.5, 0.5);
 float zoomConstant = 0.0f;
 glm::mat4 Projection, View;
 glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
+
 
 // Parameters for camera and lighting
 glm::vec3 lightPosition_1 = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -637,10 +648,12 @@ void lightControl(GLint shaderProgramID) {
 // Load objects to buffer
 void objDataToOpenGL() {
 	// Standard steps to pass one object and its texture
+
 	// jeep->loadObjToBuffer("resource/jeep/jeep.obj");
 	// jeep->loadTextureToBuffer("resource/jeep/jeep_texture.bmp", programID);
 	// jeep->setScale(glm::vec3(0.3f, 0.3f, 0.3f));
 	// jeep->setTransform(glm::vec3(2.0f, 0.3f, -5.0f));
+
 	//
 
 	// Load earth
@@ -700,6 +713,7 @@ void objDataToOpenGL() {
 		"resource/skybox/orbital-element_dn.bmp",
 		"resource/skybox/orbital-element_lf.bmp",
 		"resource/skybox/orbital-element_rt.bmp");
+
 	background->setSelfRotate(glm::vec3(1, 0, 0), 277.0f);
 }
 
@@ -864,6 +878,7 @@ void drawScreen() {
 	}
 
 	// Order of sending matrices must NOT be changed
+
 	glUseProgram(skyboxProgramID);
 	eyeViewMatrix(skyboxProgramID);
 	background->renderSkybox();
@@ -881,12 +896,17 @@ int main(int argc, char *argv[]) {
 
 	// For Windows
 	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-	glutCreateWindow("CSCI3260 Project");
+
+
+
+	mainWindow = glutCreateWindow("CSCI3260 Project");
+	setupGLUI();
+
+
 	glewInit();
 
-	// Create object and point to global variables
+  // Create object and point to global variables
 	jeep = new Object;
 	airplane = new Airplane;
 	earth = new Earth;
@@ -902,12 +922,14 @@ int main(int argc, char *argv[]) {
 	initOpenGL();
 	glutDisplayFunc(drawScreen);
 
-	// Mouse and keyboard functions are in Library/gesture.cpp
+  // Mouse and keyboard functions are in Library/gesture.cpp
 	glutKeyboardFunc(keyboardClick);
 	glutSpecialFunc(arrowKey);
 	glutPassiveMotionFunc(mouseCoordinate);
 	glutMouseFunc(mouseWheelFunc);
 
 	glutMainLoop();
+
+
 	return 0;
 }
