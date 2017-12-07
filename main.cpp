@@ -47,7 +47,7 @@ float cameraPosAngle = 71.0f;
 float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta = 0.0f;
 
 // Parameter for switch on fog
-GLuint fogFlag = 1;
+int fogFlag = 1;
 float fogDensity = 0.017f;
 float fogGradient = 3.5f;
 glm::vec3 fogColor = glm::vec3(0.5, 0.5, 0.5);

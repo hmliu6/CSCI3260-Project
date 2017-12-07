@@ -31,7 +31,7 @@ int radiogroup_item_id = 0; //  Id of the selcted radio button
 float speed = 1;			//  Spinner Speed Live Variable
 
 
-int fogFlag = 0;
+extern int fogFlag;
 
 
 void myGlutReshape(int w, int h) {
