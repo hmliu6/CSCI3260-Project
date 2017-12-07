@@ -81,13 +81,12 @@ void keyboardClick(unsigned char key, int x, int y){
 
 void arrowKey(int key, int x, int y){
 	if (key == GLUT_KEY_UP){
-	  rotationSpeedConstant += 0.01f;
-		maxSize = rotationSpeedConstant;
+	  rotationSpeedConstant += 1.0f;
+	  rotationSpeedConstant = glm::clamp(rotationSpeedConstant, 0.0f, 100.0f);
 	}
 	else if (key == GLUT_KEY_DOWN){
-	  rotationSpeedConstant -= 0.01f;
-	  rotationSpeedConstant = glm::clamp(rotationSpeedConstant, 0.0f, 1.0f);
-		maxSize = rotationSpeedConstant;
+	  rotationSpeedConstant -= 1.0f;
+	  rotationSpeedConstant = glm::clamp(rotationSpeedConstant, 0.0f, 100.0f);
 	}
 	else if (key == GLUT_KEY_LEFT){
 	  // cameraPosAngle -= 0.1f;

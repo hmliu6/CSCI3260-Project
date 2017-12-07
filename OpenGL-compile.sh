@@ -6,7 +6,6 @@ g++ \
   -framework IOKit \
   -framework GLUT \
   -framework GLUI \
-  -v \
   -o demo main.cpp Library/*.cpp \
   -I include \
   -I /sw/include \
