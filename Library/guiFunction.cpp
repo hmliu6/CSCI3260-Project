@@ -1,4 +1,8 @@
-#include "Dependencies/glui/glui.h"
+#ifdef __APPLE__
+  #include <GL/glui.h>
+#elif defined _WIN32 || defined _WIN64
+  #include "Library/Dependencies/glui/glui.h"
+#endif
 #include "constant.hpp"
 
 extern int windowWidth, windowHieght;
@@ -126,11 +130,10 @@ void setupGLUI()
 	GLUI_Master.set_glutSpecialFunc(NULL);
 	GLUI_Master.set_glutMouseFunc(NULL);
 
-	//GLUI *glui = GLUI_Master.create_glui("Panel");
+	GLUI *glui = GLUI_Master.create_glui("Panel");
 	
 
-	GLUI *glui = GLUI_Master.create_glui_subwindow(mainWindow,
-		GLUI_SUBWINDOW_RIGHT);
+	// GLUI *glui = GLUI_Master.create_glui_subwindow(mainWindow, GLUI_SUBWINDOW_RIGHT);
 
 	glui->set_main_gfx_window(mainWindow);
 	GLUI_StaticText *infoText = glui->add_statictext("SpaceVehicle-CUHK");

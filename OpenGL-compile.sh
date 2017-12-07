@@ -5,6 +5,7 @@ g++ \
   -framework OpenGL \
   -framework IOKit \
   -framework GLUT \
+  -framework GLUI \
   -o demo main.cpp Library/*.cpp \
   -I include \
   -I /sw/include \
