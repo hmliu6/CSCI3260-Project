@@ -16,12 +16,14 @@ uniform mat3 viewModelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 modelMatrix;
 
-uniform vec3 lightPosition;
+uniform vec3 lightPosition_1;
+uniform vec3 lightPosition_2;
 
 out vec2 UV;
 out vec3 worldPos;
 out vec3 cameraEye;
-out vec3 lightDirection;
+out vec3 lightDirection_1;
+out vec3 lightDirection_2;
 out vec3 cameraNormal;
 
 void main()
@@ -43,8 +45,11 @@ void main()
   vec3 cameraPos = (viewMatrix * modelMatrix * positionRTS).xyz;
   cameraEye = vec3(0.0f, 0.0f, 0.0f) - cameraPos;
 
-  vec3 cameraLight = (viewMatrix * vec4(lightPosition, 1.0f)).xyz;
-  lightDirection = cameraLight + cameraEye;
+  vec3 cameraLight_1 = (viewMatrix * vec4(lightPosition_1, 1.0f)).xyz;
+  lightDirection_1 = cameraLight_1 + cameraEye;
+
+  vec3 cameraLight_2 = (viewMatrix * vec4(lightPosition_2, 1.0f)).xyz;
+  lightDirection_2 = cameraLight_2 + cameraEye;
 
   cameraNormal = (viewMatrix * modelMatrix * RotationMatrix * TransformMatrix * ScalingMatrix * vec4(normal, 0.0f)).xyz;
 
@@ -55,7 +60,7 @@ void main()
   //   vec3 cameraNormal = viewModelMatrix * normalize(normal);
   //   mat3 TBN = transpose(mat3(cameraTangent, cameraBitangent, cameraNormal));
   //
-  //   lightTangent = TBN * lightDirection;
+  //   lightTangent = TBN * lightDirection_1;
   //   eyeTangent = TBN * cameraEye;
   // }
 

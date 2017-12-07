@@ -47,7 +47,8 @@ glm::mat4 Projection, View;
 glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 
 // Parameters for camera and lighting
-glm::vec3 lightPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 lightPosition_1 = glm::vec3(0.0f, 0.0f, 0.0f);
+glm::vec3 lightPosition_2 = glm::vec3(0.0f, 0.0f, 0.0f);
 float cameraRotation = 0.0f, verticalRotation = 0.0f;
 float perspectiveAngle = 45.0f;
 int viewFlag = 0;
@@ -535,6 +536,7 @@ Object *jeep = nullptr;
 Airplane *airplane = nullptr;
 Earth *earth = nullptr;
 Object *sun = nullptr;
+Object *lightedPlanet = nullptr;
 Object *saturn = nullptr;
 Object *moon = nullptr;
 Object *rock = nullptr;
@@ -618,8 +620,11 @@ void eyeViewMatrix(GLint shaderProgramID) {
 }
 
 void lightControl(GLint shaderProgramID) {
-	GLuint LightID = glGetUniformLocation(shaderProgramID, "lightPosition");
-	glUniform3f(LightID, lightPosition.x, lightPosition.y, lightPosition.z);
+	GLuint LightID_1 = glGetUniformLocation(shaderProgramID, "lightPosition_1");
+	glUniform3f(LightID_1, lightPosition_1.x, lightPosition_1.y, lightPosition_1.z);
+
+	GLuint LightID_2 = glGetUniformLocation(shaderProgramID, "lightPosition_2");
+	glUniform3f(LightID_2, lightPosition_2.x, lightPosition_2.y, lightPosition_2.z);
 
 	GLuint diffuseID = glGetUniformLocation(shaderProgramID, "diffuseCoefficient");
 	glUniform1f(diffuseID, diffuseCoefficient);
@@ -662,6 +667,12 @@ void objDataToOpenGL() {
 	sun->loadTextureToBuffer("resource/sun/sun.bmp", lightSourceProgramID);
 	sun->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
 	sun->setTransform(glm::vec3(0.0f, 0.0f, 0.0f));
+
+  // Load Lighted Planet
+  lightedPlanet->loadObjToBuffer("resource/sun/planet.obj");
+  lightedPlanet->loadTextureToBuffer("resource/lighted_planet/lighted_planet.bmp", lightSourceProgramID);
+  lightedPlanet->setScale(glm::vec3(0.8f, 0.8f, 0.8f));
+  lightedPlanet->setTransform(glm::vec3(12.0f, 10.0f, 15.0f));
 
 	// Load airplane
 	airplane->loadObjToBuffer("resource/airplane/airplane.obj");
@@ -718,7 +729,7 @@ void drawScreen() {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f); //specify the background color
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	lightPosition = sun->getGlobalOrigin();
+	lightPosition_1 = sun->getGlobalOrigin();
 
   glUseProgram(lightSourceProgramID);
 	eyeViewMatrix(lightSourceProgramID);
@@ -726,6 +737,15 @@ void drawScreen() {
 	sun->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
 	sun->sendMatrix(lightSourceProgramID);
   sun->renderObject();
+
+  lightPosition_2 = lightedPlanet->getGlobalOrigin();
+  glUseProgram(lightSourceProgramID);
+	eyeViewMatrix(lightSourceProgramID);
+	lightControl(lightSourceProgramID);
+	lightedPlanet->setSelfRotate(glm::vec3(0, 1, 0), 0.1);
+	lightedPlanet->sendMatrix(lightSourceProgramID);
+  lightedPlanet->renderObject();
+
 
   // For displaying bounding box function
   // glUseProgram(programID);
@@ -862,6 +882,7 @@ int main(int argc, char *argv[]) {
 	airplane = new Airplane;
 	earth = new Earth;
 	sun = new Object;
+  lightedPlanet = new Object;
 	saturn = new Object;
 	moon = new Object;
   rock = new Object;
