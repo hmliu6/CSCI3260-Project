@@ -4,9 +4,17 @@
   #include "Dependencies/glui/glui.h"
 #endif
 #include "constant.hpp"
+#include "Dependencies/glm/glm.hpp"
+
+
+using namespace std;
 
 extern int windowWidth, windowHieght;
 extern GLuint mainWindow;
+
+extern int fogFlag;
+extern glm::vec3 fogColor;
+extern float rotationSpeedConstant;			//  Spinner Speed Live Variable
 
 enum
 {
@@ -27,11 +35,10 @@ int trajectoryFlag = 0;
 
 
 int listbox_item_id = 12;	//  Id of the selected item in the list box
-int radiogroup_item_id = 0; //  Id of the selcted radio button
-float speed = 1;			//  Spinner Speed Live Variable
+int view_radiogroup_item_id = 0; //  Id of the selcted radio button
+int fog_radiogroup_item_id = 0; //  Id of the selcted radio button
 
 
-int fogFlag = 0;
 
 
 void myGlutReshape(int w, int h) {
@@ -86,19 +93,23 @@ void glui_callback(int control_id)
 		//  A Radio Button in the radio group is selected
 	case VIEWPOINT_RADIOGROUP:
 
-		printf("Radio Button %d selected.\n", radiogroup_item_id);
+		printf("Radio Button %d selected.\n", view_radiogroup_item_id);
 
 		break;
 
 
 	case SPEED_SPINNER:
-		printf("Speed of vehicle : %f.\n", speed);
+		if (rotationSpeedConstant <= 0) {
+			rotationSpeedConstant = 0.01f;
+		}
+		printf("Speed of vehicle : %f.\n", rotationSpeedConstant);
 
 		break;
 
 	case FOG_TYPE_RADIOGROUP:
 
-		printf("Radio Button %d selected.\n", radiogroup_item_id);
+		printf("Radio Button %d selected.\n", fog_radiogroup_item_id);
+		fogColor = fog_radiogroup_item_id == 1 ? glm::vec3(0.5, 0.5, 0.6) : glm::vec3(0.5, 0.5, 0.5);
 
 		break;
 
@@ -141,7 +152,7 @@ void setupGLUI()
 
 	GLUI_Panel *vehicle_panel = glui->add_panel("Vehicle Panel");
 
-	GLUI_Spinner *spinner = glui->add_spinner_to_panel(vehicle_panel, "Speed", GLUI_SPINNER_FLOAT, &speed, SPEED_SPINNER, glui_callback);
+	GLUI_Spinner *spinner = glui->add_spinner_to_panel(vehicle_panel, "Speed", GLUI_SPINNER_FLOAT, &rotationSpeedConstant, SPEED_SPINNER, glui_callback);
 
 	glui->add_separator();
 
@@ -163,7 +174,7 @@ void setupGLUI()
 
 	//  Create radio button group
 	GLUI_RadioGroup *ot_group = glui->add_radiogroup_to_panel
-	(view_panel, &radiogroup_item_id, VIEWPOINT_RADIOGROUP, glui_callback);
+	(view_panel, &view_radiogroup_item_id, VIEWPOINT_RADIOGROUP, glui_callback);
 
 	//  Add the radio buttons to the radio group
 	glui->add_radiobutton_to_group(ot_group, "Cube");
@@ -171,13 +182,13 @@ void setupGLUI()
 
 
 
-	GLUI_Listbox *color_listbox = glui->add_listbox_to_panel(op_panel,
-		"Color", &listbox_item_id, COLOR_LISTBOX, glui_callback);
+	//GLUI_Listbox *color_listbox = glui->add_listbox_to_panel(op_panel,
+	//	"Color", &listbox_item_id, COLOR_LISTBOX, glui_callback);
 
-	color_listbox->add_item(1, "Black");
-	color_listbox->add_item(2, "Blue");
+	//color_listbox->add_item(1, "Black");
+	//color_listbox->add_item(2, "Blue");
 
-	color_listbox->set_int_val(1);
+	//color_listbox->set_int_val(1);
 
 
 	glui->add_separator();
@@ -189,7 +200,7 @@ void setupGLUI()
 	glui->add_column_to_panel(fog_panel, true);
 
 	GLUI_RadioGroup *fog_group = glui->add_radiogroup_to_panel
-	(fog_panel, &radiogroup_item_id, FOG_TYPE_RADIOGROUP, glui_callback);
+	(fog_panel, &fog_radiogroup_item_id, FOG_TYPE_RADIOGROUP, glui_callback);
 
 	//  Add the radio buttons to the radio group
 	glui->add_radiobutton_to_group(fog_group, "Ivory");

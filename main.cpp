@@ -47,7 +47,7 @@ float cameraPosAngle = 71.0f;
 float orbitalTheta = 0.0f, saturnAlpha = 0.0f, moonTheta = 0.0f, airplaneTheta = 0.0f;
 
 // Parameter for switch on fog
-GLuint fogFlag = 1;
+int fogFlag = 1;
 float fogDensity = 0.017f;
 float fogGradient = 3.5f;
 glm::vec3 fogColor = glm::vec3(0.5, 0.5, 0.5);
@@ -892,10 +892,10 @@ int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
 	// For Mac OS
-	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	//glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 
 	// For Windows
-	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	 glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 

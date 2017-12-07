@@ -15,7 +15,7 @@ using namespace std;
 
 extern float specularCoefficient, diffuseCoefficient;
 extern float cameraPosAngle, zoomConstant;
-extern GLuint fogFlag;
+extern int fogFlag;
 extern glm::vec3 fogColor;
 extern glm::vec3 cameraPosition;
 extern float perspectiveAngle;
@@ -109,6 +109,7 @@ void mouseCoordinate(int x, int y){
 
 void mouseWheelFunc(int button, int state, int x, int y){
 	printf("mouseWheelFunc: %i\n", state);
+	printf("mouseWheelFuncx: %i  y: %\n", x, y);
 	if ((button == 3) || (button == 4)) {
 		if (state == GLUT_UP) return;
 		if (button == 3)
