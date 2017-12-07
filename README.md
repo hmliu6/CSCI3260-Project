@@ -30,7 +30,7 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 
 ### Bonus Features
 
-* [ ] Add another visible light source with Phong Illumination Model
+* [X] Add another visible light source with Phong Illumination Model
 * [x] Collision Detection with **Landmark distance** / **Bounding box** / **Bounding sphere** Algorithm
 * [x] Provide extra viewpoints attached to space vehicles
 * [x] Real-time trajectory of space vehicle D with string
