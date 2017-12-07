@@ -1,11 +1,11 @@
 #ifdef __APPLE__
-  #include <GL/glew.h>
-  #include <GLUT/glut.h>
-  #include <GL/glui.h>
+#include <GL/glew.h>
+#include <GLUT/glut.h>
+#include <GL/glui.h>
 #elif defined _WIN32 || defined _WIN64
-  #include "Library/Dependencies/glew/glew.h"
-  #include "Library/Dependencies/freeglut/freeglut.h"
-  #include "Library/Dependencies/glui/glui.h"
+#include "Library/Dependencies/glew/glew.h"
+#include "Library/Dependencies/freeglut/freeglut.h"
+#include "Library/Dependencies/glui/glui.h"
 #endif
 #include <stdlib.h>
 #include <math.h>
@@ -448,8 +448,8 @@ int main(int argc, char *argv[]) {
 
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
-	// glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	//glutInitDisplayMode(GLUT_3_2_CORE_PROFILE | GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
+	glutInitDisplayMode(GLUT_RGB | GLUT_SINGLE | GLUT_DEPTH | GLUT_MULTISAMPLE);
 	glutInitWindowSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
 

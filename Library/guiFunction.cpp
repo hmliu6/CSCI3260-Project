@@ -1,7 +1,7 @@
 #ifdef __APPLE__
   #include <GL/glui.h>
 #elif defined _WIN32 || defined _WIN64
-  #include "Library/Dependencies/glui/glui.h"
+  #include "Dependencies\glui\glui.h"
 #endif
 #include "constant.hpp"
 
