@@ -28,7 +28,7 @@
 #include "Library/constant.hpp"
 #include "Library/boundingBox.hpp"
 #include "Library/guiFunction.hpp"
-#include "Library/music.hpp"
+// #include "Library/music.hpp"
 
 using namespace std;
 
@@ -91,6 +91,7 @@ public:
 		tempTransformMatrix = glm::mat4(1.0f);
 		normalMapFlag = 0;
 		secondTextureFlag = 0;
+		displacementMapFlag = 0;
 		cubeCoords = (struct boundingBox *) malloc(sizeof(struct boundingBox));
 		cubeCoords->minCubeVertex = glm::vec3(0.0f);
 		cubeCoords->maxCubeVertex = glm::vec3(0.0f);
@@ -165,6 +166,13 @@ public:
 		secondTextureFlag = 1;
 	}
 
+  // Pass all texture data to buffer
+  void loadDisplacementMapToBuffer(char * texturePath, GLint shaderProgramID) {
+    displacementMapTexture = loadBMPtoTexture(texturePath);
+    displacementMapTextureID = glGetUniformLocation(shaderProgramID, "displacementMap");
+    displacementMapFlag = 1;
+  }
+
 	glm::vec3 getGlobalOrigin() {
 		glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
 		glm::vec4 tempGlobalOrigin = modelRotationMatrix * modelTransformMatrix * modelScalingMatrix * glm::vec4(globalOrigin, 1.0f);
@@ -215,9 +223,11 @@ public:
 		GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
 		GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
 		GLuint globalNormalMapFlagID = glGetUniformLocation(shaderProgramID, "globalNormalMapFlag");
+		GLuint displacementMapFlagID = glGetUniformLocation(shaderProgramID, "displacementMapFlag");
 		glUniform1i(secondTextureFlagID, secondTextureFlag);
 		glUniform1i(normalMapFlagID, normalMapFlag);
 		glUniform1i(globalNormalMapFlagID, globalNormalMapFlag);
+		glUniform1i(displacementMapFlagID, displacementMapFlag);
 		GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
 		GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
 		GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
@@ -273,8 +283,8 @@ public:
 protected:
 	// Put all variables declaration here
 	GLuint VAObuffer, vertexVBO, uvVBO, normalVBO;
-	GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID;
-	GLushort normalMapFlag, secondTextureFlag;
+	GLuint objectTexture, TextureID, objectTexture2, TextureID2, objectNormalTexture, NormalTextureID, displacementMapTexture, displacementMapTextureID;
+	GLushort normalMapFlag, secondTextureFlag, displacementMapFlag;
 
 	GLsizei drawSize;
 
@@ -672,6 +682,7 @@ void objDataToOpenGL() {
 	moon->loadObjToBuffer("resource/moon/planet.obj");
 	moon->loadTextureToBuffer("resource/moon/moon.bmp", programID);
 	moon->loadNormalTextureToBuffer("resource/moon/moon_normal.bmp", programID);
+	moon->loadDisplacementMapToBuffer("resource/sun/sun.bmp", programID);
 	moon->setScale(glm::vec3(0.4f, 0.4f, 0.4f));
 
 	// Load saturn
@@ -930,7 +941,7 @@ int main(int argc, char *argv[]) {
 	glutPassiveMotionFunc(mouseCoordinate);
 	glutMouseFunc(mouseWheelFunc);
 
-	bgm(); // my background music
+	// bgm(); // my background music
 	glutMainLoop();
 
 	//stop_bgm();

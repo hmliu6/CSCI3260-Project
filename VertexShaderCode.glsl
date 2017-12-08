@@ -19,6 +19,10 @@ uniform mat4 modelMatrix;
 uniform vec3 lightPosition_1;
 uniform vec3 lightPosition_2;
 
+
+uniform sampler2D displacementMap;
+uniform bool displacementMapFlag;
+
 out vec2 UV;
 out vec3 worldPos;
 out vec3 cameraEye;
@@ -28,6 +32,10 @@ out vec3 cameraNormal;
 
 void main()
 {
+  if(displacementMapFlag){
+    dv = texture2D( displacementMap, vertexUV );
+    position = 0.26*dv.x + 0.69*dv.y + 0.15*dv.z;
+  }
 
   vec4 v = vec4(position, 1.0f);
 
