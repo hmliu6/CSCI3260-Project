@@ -32,12 +32,15 @@ out vec3 cameraNormal;
 
 void main()
 {
+
+
+  vec3 curPosition = position;
   if(displacementMapFlag){
-    dv = texture2D( displacementMap, vertexUV );
-    position = 0.26*dv.x + 0.69*dv.y + 0.15*dv.z;
+    vec4 dv = texture2D( displacementMap, vertexUV );
+    curPosition = vec3((position.x + dv.x)/2, (position.y + dv.y)/2, (position.z + dv.z)/2);
   }
 
-  vec4 v = vec4(position, 1.0f);
+  vec4 v = vec4(curPosition, 1.0f);
 
 
   vec4 new_position = PVM * RotationMatrix * TransformMatrix * ScalingMatrix * v;
