@@ -685,7 +685,7 @@ void objDataToOpenGL() {
 	moon->loadObjToBuffer("resource/moon/planet.obj");
 	moon->loadTextureToBuffer("resource/moon/moon.bmp", programID);
 	moon->loadNormalTextureToBuffer("resource/moon/moon_normal.bmp", programID);
-	moon->loadDisplacementMapToBuffer("resource/sun/sun.bmp", programID);
+	moon->loadDisplacementMapToBuffer("resource/moon/displacementmap.bmp", programID);
 	moon->setScale(glm::vec3(1.4f, 1.4f, 1.4f));
 
 	// Load saturn
