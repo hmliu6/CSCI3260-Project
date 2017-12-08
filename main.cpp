@@ -28,6 +28,7 @@
 #include "Library/constant.hpp"
 #include "Library/boundingBox.hpp"
 #include "Library/guiFunction.hpp"
+#include "Library/music.hpp"
 
 using namespace std;
 
@@ -929,8 +930,10 @@ int main(int argc, char *argv[]) {
 	glutPassiveMotionFunc(mouseCoordinate);
 	glutMouseFunc(mouseWheelFunc);
 
+	bgm(); // my background music
 	glutMainLoop();
 
+	//stop_bgm();
 
 	return 0;
 }
