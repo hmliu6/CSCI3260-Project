@@ -37,3 +37,12 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 * [ ] Asteroid ring cloud with more than 5000 random rocks around C (with this example: https://learnopengl.com/#!Advanced-OpenGL/Instancing tried but not success)
 * [ ] Shadow mapping, Environment mapping, Displacement mapping
 * [ ] Background music with **IrrKlang** library
+
+### Project Report
+
+* [] Frames from different viewpoints to show all motions of objects
+* [] Close look at the basic light rendering results
+* [] Close look at normal mapping on planet A
+* [] Fog effect with different visibilities
+* [] 3 distinct viewpoints
+* [] Bonus features shown
