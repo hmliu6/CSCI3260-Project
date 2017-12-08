@@ -22,6 +22,7 @@ uniform vec3 lightPosition_2;
 
 uniform sampler2D displacementMap;
 uniform bool displacementMapFlag;
+uniform bool globalDisplacementMapFlag;
 
 out vec2 UV;
 out vec3 worldPos;
@@ -35,9 +36,9 @@ void main()
 
 
   vec3 curPosition = position;
-  if(displacementMapFlag){
+  if(globalDisplacementMapFlag&&displacementMapFlag){
     vec4 dv = texture2D( displacementMap, vertexUV );
-    curPosition = vec3((position.x + dv.x)/2, (position.y + dv.y)/2, (position.z + dv.z)/2);
+    curPosition = vec3((position.x + dv.x), (position.y + dv.y), (position.z + dv.z));
   }
 
   vec4 v = vec4(curPosition, 1.0f);

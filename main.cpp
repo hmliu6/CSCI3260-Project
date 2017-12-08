@@ -60,6 +60,7 @@ glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomCo
 
 // Parameters for choosing on off normal map
 int globalNormalMapFlag = 1;
+int globalDisplacementMapFlag = 1;
 
 // Parameters for camera and lighting
 glm::vec3 lightPosition_1 = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -224,10 +225,12 @@ public:
 		GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
 		GLuint globalNormalMapFlagID = glGetUniformLocation(shaderProgramID, "globalNormalMapFlag");
 		GLuint displacementMapFlagID = glGetUniformLocation(shaderProgramID, "displacementMapFlag");
+		GLuint globalDisplacementMapFlagID = glGetUniformLocation(shaderProgramID, "globalDisplacementMapFlag");
 		glUniform1i(secondTextureFlagID, secondTextureFlag);
 		glUniform1i(normalMapFlagID, normalMapFlag);
 		glUniform1i(globalNormalMapFlagID, globalNormalMapFlag);
 		glUniform1i(displacementMapFlagID, displacementMapFlag);
+		glUniform1i(globalDisplacementMapFlagID, globalDisplacementMapFlag);
 		GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
 		GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
 		GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");

@@ -43,6 +43,7 @@ extern glm::vec3 fogColor;
 extern float rotationSpeedConstant;			//  Spinner Speed Live Variable
 extern float perspectiveAngle;
 extern int viewFlag;
+extern int globalDisplacementMapFlag;
 
 
 void myGlutReshape(int w, int h) {
@@ -193,8 +194,11 @@ void setupGLUI()
 
 	//glui->add_checkbox_to_panel(move_panel, "Normal Map", &globalNormalMapFlag);
 
+	glui->add_checkbox_to_panel(move_panel, "Displacement Map", &globalDisplacementMapFlag);
+
 	glui->add_checkbox_to_panel(move_panel, "Trajectory", &trajectoryDisplay);
 
+	
 	glui->add_column_to_panel(op_panel, true);
 
 
