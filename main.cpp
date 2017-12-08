@@ -57,6 +57,8 @@ float zoomConstant = 0.0f;
 glm::mat4 Projection, View;
 glm::vec3 cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 
+// Parameters for choosing on off normal map
+int globalNormalMapFlag = 1;
 
 // Parameters for camera and lighting
 glm::vec3 lightPosition_1 = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -209,11 +211,12 @@ public:
 		glUniformMatrix4fv(ScalingMatrixID, 1, GL_FALSE, &modelScalingMatrix[0][0]);
 		glUniformMatrix4fv(TransformMatrixID, 1, GL_FALSE, &modelTransformMatrix[0][0]);
 		glUniformMatrix4fv(RotateMatrixID, 1, GL_FALSE, &modelRotationMatrix[0][0]);
-
 		GLuint normalMapFlagID = glGetUniformLocation(shaderProgramID, "normalMapFlag");
 		GLuint secondTextureFlagID = glGetUniformLocation(shaderProgramID, "secondTextureFlag");
+		GLuint globalNormalMapFlagID = glGetUniformLocation(shaderProgramID, "globalNormalMapFlag");
 		glUniform1i(secondTextureFlagID, secondTextureFlag);
 		glUniform1i(normalMapFlagID, normalMapFlag);
+		glUniform1i(globalNormalMapFlagID, globalNormalMapFlag);
 		GLuint fogFlagID = glGetUniformLocation(shaderProgramID, "fogFlag");
 		GLuint fogDensityID = glGetUniformLocation(shaderProgramID, "fogDensity");
 		GLuint fogGradientID = glGetUniformLocation(shaderProgramID, "fogGradient");
@@ -659,8 +662,8 @@ void objDataToOpenGL() {
 
 	// Load earth
 	earth->loadObjToBuffer("resource/earth/planet.obj");
-	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadNormalTextureToBuffer("resource/earth/earth_normal.bmp", programID);
+	earth->loadTextureToBuffer("resource/earth/earth.bmp", programID);
 	earth->loadSecondTextureToBuffer("resource/sun/sun.bmp", programID);
 	earth->setScale(glm::vec3(1.5f, 1.5f, 1.5f));
 
@@ -672,8 +675,8 @@ void objDataToOpenGL() {
 
 	// Load saturn
 	saturn->loadObjToBuffer("resource/saturn/planet.obj");
-	saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
 	saturn->loadNormalTextureToBuffer("resource/saturn/saturn_normal.bmp", programID);
+	saturn->loadTextureToBuffer("resource/saturn/saturn.bmp", programID);
 	saturn->setScale(glm::vec3(1.0f, 1.0f, 1.0f));
 	saturn->setTransform(glm::vec3(-9.0f, 7.0f, 0.0f));
 

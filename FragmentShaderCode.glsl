@@ -15,6 +15,7 @@ uniform sampler2D normalMap;
 uniform sampler2D myTextureSampler_2;
 uniform bool normalMapFlag;
 uniform bool secondTextureFlag;
+uniform bool globalNormalMapFlag;
 uniform int fogFlag;
 uniform float fogDensity;
 uniform float fogGradient;
@@ -66,9 +67,12 @@ void main(){
   vec3 unitLight_1 = normalize(lightDirection_1);
   vec3 unitLight_2 = normalize(lightDirection_2 );
 
-  if(normalMapFlag){
+  if(globalNormalMapFlag && normalMapFlag){
     N = texture(normalMap, UV).rgb;
     N = normalize(N * 2.0f - 1.0f);
+  }else{
+    N = texture(normalMap, UV).rgb;
+    N = normalize(cameraNormal);
   }
 
   float cosTheta_1 = clamp(dot(N, unitLight_1), 0, 1);

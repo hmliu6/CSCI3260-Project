@@ -1,7 +1,7 @@
 #ifdef __APPLE__
-  #include <GL/glui.h>
+#include <GL/glui.h>
 #elif defined _WIN32 || defined _WIN64
-  #include "Dependencies/glui/glui.h"
+#include "Dependencies/glui/glui.h"
 #endif
 #include "constant.hpp"
 #include "Dependencies/glm/glm.hpp"
@@ -26,8 +26,8 @@ enum
 	QUIT_BUTTON
 };
 
-int moveFlag = 0;
-int normalMapFlag = 0;
+int moveFlag = 1;
+extern int globalNormalMapFlag;
 extern int trajectoryDisplay;
 
 
@@ -41,6 +41,8 @@ int fog_radiogroup_item_id = 0; //  Id of the selcted radio button
 extern int fogFlag;
 extern glm::vec3 fogColor;
 extern float rotationSpeedConstant;			//  Spinner Speed Live Variable
+extern float perspectiveAngle;
+extern int viewFlag;
 
 
 void myGlutReshape(int w, int h) {
@@ -96,6 +98,32 @@ void glui_callback(int control_id)
 	case VIEWPOINT_RADIOGROUP:
 
 		printf("Radio Button %d selected.\n", view_radiogroup_item_id);
+		switch (view_radiogroup_item_id) {
+		case 0:
+			perspectiveAngle = 45.0f;
+			viewFlag = 0;
+			break;
+		case 1:
+			// Viewpoint at +Y axis
+			perspectiveAngle = 90.0f;
+			viewFlag = 2;
+			break;
+		case 2:
+			// Viewpoint at +X axis
+			perspectiveAngle = 45.0f;
+			viewFlag = 1;
+			break;
+		case 3:
+			// Viewpoint at +X axis
+			perspectiveAngle = 45.0f;
+			viewFlag = -1;
+			break;
+		case 4:
+			// Viewpoint attached to airplane
+			perspectiveAngle = 75.0f;
+			viewFlag = 99;
+			break;
+		}
 
 		break;
 
@@ -117,7 +145,7 @@ void glui_callback(int control_id)
 
 	case INFO_BUTTON:
 		printf("Move Flag : %i\n", moveFlag);
-		printf("Normal Flag : %i\n", normalMapFlag);
+		printf("Normal Flag : %i\n", globalNormalMapFlag);
 		printf("Trajectory Flag : %i\n", trajectoryDisplay);
 		printf("Fog Flag : %i\n", fogFlag);
 
@@ -159,11 +187,11 @@ void setupGLUI()
 
 	GLUI_Panel *op_panel = glui->add_rollout("Object Properties");
 
-	GLUI_Panel *move_panel = glui->add_panel_to_panel(op_panel,"Move/NormalMap");
+	GLUI_Panel *move_panel = glui->add_panel_to_panel(op_panel, "Move/NormalMap");
 
 	glui->add_checkbox_to_panel(move_panel, "Move", &moveFlag);
 
-	glui->add_checkbox_to_panel(move_panel, "Normal Map", &normalMapFlag);
+	glui->add_checkbox_to_panel(move_panel, "Normal Map", &globalNormalMapFlag);
 
 	glui->add_checkbox_to_panel(move_panel, "Trajectory", &trajectoryDisplay);
 
@@ -177,8 +205,11 @@ void setupGLUI()
 	(view_panel, &view_radiogroup_item_id, VIEWPOINT_RADIOGROUP, glui_callback);
 
 	//  Add the radio buttons to the radio group
-	glui->add_radiobutton_to_group(ot_group, "Cube");
-	glui->add_radiobutton_to_group(ot_group, "Sphere");
+	glui->add_radiobutton_to_group(ot_group, "Original");
+	glui->add_radiobutton_to_group(ot_group, "Top");
+	glui->add_radiobutton_to_group(ot_group, "Left");
+	glui->add_radiobutton_to_group(ot_group, "Right");
+	glui->add_radiobutton_to_group(ot_group, "Airplane");
 
 
 
