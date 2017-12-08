@@ -40,9 +40,9 @@ Keep the above objects in ratio wthen changing window size with `glutReshapeFunc
 
 ### Project Report
 
-* [x] Frames from different viewpoints to show all motions of objects
-* [x] Close look at the basic light rendering results
-* [x] Close look at normal mapping on planet A
-* [x] Fog effect with different visibilities
-* [x] 3 distinct viewpoints
-* [x] Bonus features shown
+* [] Frames from different viewpoints to show all motions of objects
+* [] Close look at the basic light rendering results
+* [] Close look at normal mapping on planet A
+* [] Fog effect with different visibilities
+* [] 3 distinct viewpoints
+* [] Bonus features shown
