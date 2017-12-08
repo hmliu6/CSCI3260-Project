@@ -109,18 +109,13 @@ void mouseCoordinate(int x, int y){
 void mouseWheelFunc(int button, int state, int x, int y){
 	printf("mouseWheelFunc: %d\n", state);
 	// printf("mouseWheelFuncx: %d  y: %d\n", x, y);
-	if ((button == 3) || (button == 4)) {
-		if (state == GLUT_UP) return;
-		if (button == 3)
-			zoomConstant -= 1.0f;
-		if (button == 4)
-			zoomConstant += 1.0f;
+	if (button == GLUT_RIGHT_BUTTON && state == GLUT_DOWN){
+		zoomConstant -= 0.5f;
+		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 	}
-	else {
-		if (button == 3)
-			zoomConstant -= 0.5f;
-		if (button == 4)
-			zoomConstant += 0.5f;
+	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN){
+		zoomConstant += 0.5f;
+		zoomConstant = glm::clamp(zoomConstant, -50.0f, 59.f);
 	}
 	cameraPosition = glm::vec3(60.0f - zoomConstant, 20.0f, 60.0f - zoomConstant);
 }
