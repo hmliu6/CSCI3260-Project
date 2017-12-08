@@ -189,9 +189,9 @@ void setupGLUI()
 
 	GLUI_Panel *move_panel = glui->add_panel_to_panel(op_panel, "Move/NormalMap");
 
-	glui->add_checkbox_to_panel(move_panel, "Move", &moveFlag);
+	//glui->add_checkbox_to_panel(move_panel, "Move", &moveFlag);
 
-	glui->add_checkbox_to_panel(move_panel, "Normal Map", &globalNormalMapFlag);
+	//glui->add_checkbox_to_panel(move_panel, "Normal Map", &globalNormalMapFlag);
 
 	glui->add_checkbox_to_panel(move_panel, "Trajectory", &trajectoryDisplay);
 
