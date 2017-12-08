@@ -28,7 +28,7 @@
 #include "Library/constant.hpp"
 #include "Library/boundingBox.hpp"
 #include "Library/guiFunction.hpp"
-// #include "Library/music.hpp"
+#include "Library/music.hpp"
 
 using namespace std;
 
@@ -167,12 +167,12 @@ public:
 		secondTextureFlag = 1;
 	}
 
-  // Pass all texture data to buffer
-  void loadDisplacementMapToBuffer(char * texturePath, GLint shaderProgramID) {
-    displacementMapTexture = loadBMPtoTexture(texturePath);
-    displacementMapTextureID = glGetUniformLocation(shaderProgramID, "displacementMap");
-    displacementMapFlag = 1;
-  }
+	// Pass all texture data to buffer
+	void loadDisplacementMapToBuffer(char * texturePath, GLint shaderProgramID) {
+		displacementMapTexture = loadBMPtoTexture(texturePath);
+		displacementMapTextureID = glGetUniformLocation(shaderProgramID, "displacementMap");
+		displacementMapFlag = 1;
+	}
 
 	glm::vec3 getGlobalOrigin() {
 		glm::vec3 globalOrigin = glm::vec3(0, 0, 0);
@@ -686,7 +686,7 @@ void objDataToOpenGL() {
 	moon->loadTextureToBuffer("resource/moon/moon.bmp", programID);
 	moon->loadNormalTextureToBuffer("resource/moon/moon_normal.bmp", programID);
 	moon->loadDisplacementMapToBuffer("resource/moon/displacementmap.bmp", programID);
-	moon->setScale(glm::vec3(1.4f, 1.4f, 1.4f));
+	moon->setScale(glm::vec3(0.4f, 0.4f, 0.4f));
 
 	// Load saturn
 	saturn->loadObjToBuffer("resource/saturn/planet.obj");
@@ -944,7 +944,7 @@ int main(int argc, char *argv[]) {
 	glutPassiveMotionFunc(mouseCoordinate);
 	glutMouseFunc(mouseWheelFunc);
 
-	// bgm(); // my background music
+	bgm(); // my background music
 	glutMainLoop();
 
 	//stop_bgm();
